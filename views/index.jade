@@ -3,3 +3,8 @@ extends layout
 block content
     h1= title
     p Welcome to #{title}
+    video(autplay id='video_id' controls)
+        source(src='stream/22' type='video/webm; codecs="vp8.0, vorbis"')
+        Your browser does not support HTML5 video.
+script.
+    document.getElementById('video_id').play();
