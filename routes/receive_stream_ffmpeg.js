@@ -5,75 +5,79 @@ var express = require('express');
 var router = express.Router();
 var FFmpeg = require('fluent-ffmpeg');
 var HashMap = require('hashmap').HashMap;
-var Duplex = require('stream').Writable;
-var fs = require('fs');
 
+var VideoBuffer = require('../util/VideoBuffer');
 var streamMap = new HashMap;
-
 var count = 0;
-var started = false;
-var begData;
-router.route('/:id')
-    .post(function (req, res) {
-        //var channelStream = fs.createWriteStream();
-        console.log('Receiving data for stream with id ' + req.param('id'));
-        console.log(req.headers);
-
-        streamMap.set(req.param('id'), req);
-        req.on('data', function (data) {
-            console.log('Receiving data: ' + data.toString());
-        });
-        /*new FFmpeg({source: req}).
-         on('error', function (err) {
-         console.log('Error:' + err.message);
-         }).on('progress', function (progress) {
-         console.log('Processing stream 1');
-         console.log('Processing at ' + progress.currentKbps);
-         console.log('Processing frames ' + progress.frames);
-         console.log('Processing at FPS' + progress.currentFps);
-         console.log('Processing target size: ' + progress.targetSize);
-         console.log('Processing timemark: ' + progress.timemark);
-         }).
-         on('end', function () {
-         console.log('reached the end');
-         res.end();
-         }).writeToStream(channelStream, { end: true });
-         */
-        req.on('end', function () {
-            console.log('Terminating stream with id: ' + req.param('id'));
-        })
-    })
-    .get(function (req, res) {
-
-        console.log('Getting stream and piping to client with id: ' + req.param('id'));
-        if (streamMap.has(req.param('id'))) {
-            var noClient = count++;
-            res.writeHead(200,
-                {
-                    'Connection': 'keep-alive',
-                    'Content-Type': 'video/webm',
-                    'Accept-Ranges': 'bytes',
-                    'Transfer-Encoding': 'chunked'
-                });
-            if (started) {
-                // res.write(begData);
-            }
-            streamMap.get(req.param('id')).on('data', function (data) {
-                console.log('Writing data to client ' + noClient + ' with length ' + data.length);
-                if (!started) {
-                    // begData = data;
-                    started = true;
-                }
-                res.write(data);
-            });
-            streamMap.get(req.param('id')).on('end', function () {
-                res.end();
-            });
-        }
-        else {
-            res.writeHead(404);
-            res.end();
-        }
+router.get('/:id/mpd', function (req, res) {
+    if (streamMap.has(req.param('id'))) {
+        res.write(streamMap.get(req.param('id')).mpd.toString());
+        res.end();
+    }
+    else {
+        res.status(404);
+        res.end();
+    }
+});
+router.post('/:id/*', function (req, res) {
+    console.log('Source: Starting stream ' + req.param('id'));
+    console.log(req.headers);
+    var vidBuf;
+    if (!streamMap.has(req.param('id'))) {
+        vidBuf = new VideoBuffer(120000000, req.param('id'));
+        streamMap.set(req.param('id'), vidBuf);
+    } else {
+        vidBuf = streamMap.get(req.param('id'));
+    }
+    var segmentLength = 0;
+    req.on('data', function (data) {
+        console.log('Source: Receiving data for stream ' + req.param('id') + ' with length ' + data.length);
+        segmentLength += data.length;
+        vidBuf.append(data);
     });
+    req.on('end', function () {
+        console.log('Source: Terminating segment for stream with id: ' + req.param('id'));
+        vidBuf.updateMPD(segmentLength);
+        res.end();
+    })
+});
+router.get('/', function (req, res) {
+    console.log('Client: Incoming request for stream ' + req.param('id') + ' with range ' + req.get('range'));
+    var range = req.header('range');
+    console.log(range);
+    if (!(typeof range === 'undefined')) {
+        var positions = range.replace('bytes=', '').split('-');
+        var start = parseInt(positions[0], 10);
+        var end = parseInt(positions[1].split('/')[0], 10);
+    }
+    else {
+        start = 0;
+        end = 49999;
+    }
+    if (isNaN(end)) {
+        end = 50000;
+    }
+    if (streamMap.has(req.param('id'))) {
+        var noClient = count++;
+        var bufferStream = streamMap.get(req.param('id'));
+        res.status(206).set(
+            {
+                'Connection': 'keep-alive',
+                'Content-Range': 'bytes ' + start + '-' + bufferStream.bufferList.length + '/' + bufferStream.bufferList.length,//bufferStream.startingIndex + bufferStream.bufferList.length + 1,
+                'Content-Type': 'video/webm',
+                'Accept-Ranges': 'bytes',
+                'Transfer-Encoding': 'chunked',
+                'Content-Length': end - start
+            });
+        console.log('Client: Getting stream and piping to client with id: ' + noClient + ' for stream with id ' + req.param('id'));
+        res.write(bufferStream.slice(start), 'binary');
+        res.end();
+    }
+    else {
+        res.writeHead(404);
+        res.end();
+    }
+});
+
 
 module.exports = router;

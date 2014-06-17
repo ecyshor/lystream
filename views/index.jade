@@ -1,10 +1,18 @@
 extends layout
 
 block content
-    h1= title
-    p Welcome to #{title}
-    video(autplay id='video_id' controls)
-        source(src='stream/22' type='video/webm; codecs="vp8.0, vorbis"')
+    video(id='videoplayer')
+        //source(src="stream/22" type='video/webm;codecs="vp8"')
         Your browser does not support HTML5 video.
-script.
-    document.getElementById('video_id').play();
+    script.
+        // setup the video element and attach it to the Dash player
+
+          var url = "stream/22/mpd";
+          var context = new Dash.di.DashContext();
+          var player = new MediaPlayer(context);
+              player.startup();
+              player.autoplay = true;
+              player.attachView(document.querySelector("#videoplayer"));
+              player.debug = true;
+              player.liveEdge = true;
+              player.attachSource(url);
