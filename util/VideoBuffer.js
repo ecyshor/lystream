@@ -23,7 +23,7 @@ var VideoBuffer = (function () {
             {allowSurrogateChars: false, skipNullAttributes: false,
                 headless: false, ignoreDecorators: false, stringify: {}});
         var date = new Date();
-        date.setSeconds(date.getSeconds() + 2);
+//        date.setSeconds(date.getSeconds());
         this.mpd.att({
             'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
             'xmlns': 'urn:mpeg:dash:schema:mpd:2011',
@@ -32,8 +32,8 @@ var VideoBuffer = (function () {
             'availabilityStartTime': date.toJSON(),
             'minBufferTime': 'PT1S',
             'profiles': 'urn:mpeg:dash:profile:isoff-live:2011',
-            'suggestedPresentationDelay': 'PT10.0S',
-            'timeShiftBufferDepth': 'PT50.0S',
+            'suggestedPresentationDelay': 'PT10S',
+            'timeShiftBufferDepth': 'PT50S',
             'maxSegmentDuration': 'PT2.01S',
             'minimumUpdatePeriod': 'PT10M'
         });
@@ -48,7 +48,7 @@ var VideoBuffer = (function () {
                 'startWithSAP': '1',
                 'maxWidth': '1280',
                 'maxHeight': '720',
-                'maxFrameRate': '15'
+                'maxFrameRate': '10'
             });
         this.adaptationSet.ele('ContentComponent ', {
             'id': '1',
@@ -64,7 +64,7 @@ var VideoBuffer = (function () {
             'id': '1',
             'width': '1280',
             'height': '720',
-            'frameRate': '15',
+            'frameRate': '10',
             'bandwidth': '360000',
             'codecs': 'vp8',
             'scanType': 'progressive'
@@ -72,7 +72,6 @@ var VideoBuffer = (function () {
     }
 
     VideoBuffer.prototype.append = function (buffer) {
-        //console.log('Appending data to video buffer with length ' + buffer.length);
         this.bufferList.append(buffer);
     };
     VideoBuffer.prototype.getSegmentData = function (segmentNumber) {
@@ -87,7 +86,6 @@ var VideoBuffer = (function () {
             } else {
                 console.log('\tRight segment index received ' + this.segmentList.get(segmentNumber));
                 var segment = this.segmentList.get(segmentNumber);
-                // console.log('\t Segment: ' + segment.toString() + 'Offset ' + this.segmentOffsetByte);
                 console.log('\tGetting data for segment corresponding with index: ' + (parseInt(segment.startingIndex) - parseInt(this.segmentOffsetByte)) + '-' + (parseInt(segment.endingIndex) - parseInt(this.segmentOffsetByte)));
                 return this.bufferList.slice(parseInt(segment.startingIndex) - parseInt(this.segmentOffsetByte), parseInt(segment.endingIndex - this.segmentOffsetByte) + 1);
             }
@@ -96,7 +94,7 @@ var VideoBuffer = (function () {
 
 
     VideoBuffer.prototype.updateMPD = function (segmentLength) {
-        // console.log('Updating segment list for segment with id' + this.lastSegment + 1);
+        started = true;
         if (this.segmentList.has(this.lastSegment)) {
             var lastSegment = this.segmentList.get(this.lastSegment);
             this.segmentList.set(this.lastSegment + 1, {
@@ -122,6 +120,7 @@ var VideoBuffer = (function () {
                 startingIndex: 0,
                 endingIndex: segmentLength - 1
             });
+
         }
         this.lastSegment++;
     };
