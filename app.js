@@ -34,15 +34,16 @@ app.use('/stream', streamingRoutes);
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
+//if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
+        console.log('Error 500: ' + err.message + '\n' + err);
         res.render('error', {
             message: err.message,
             error: err
         });
     });
-}
+//}
 
 // production error handler
 // no stacktraces leaked to user

@@ -3,15 +3,14 @@
  */
 var express = require('express');
 var router = express.Router();
-var FFmpeg = require('fluent-ffmpeg');
 var HashMap = require('hashmap').HashMap;
 
 var VideoBuffer = require('../util/VideoBuffer');
 var streamMap = new HashMap;
-var count = 0;
 router.get('/:id/mpd', function (req, res) {
     if (streamMap.has(req.param('id'))) {
-        res.write(streamMap.get(req.param('id')).mpd.toString());
+        res.set({'Content-Type': 'application/xml'});
+        res.write(streamMap.get(req.param('id')).getMPD());
         res.end();
     }
     else {
@@ -21,17 +20,15 @@ router.get('/:id/mpd', function (req, res) {
 });
 router.post('/:id/*', function (req, res) {
     console.log('Source: Starting stream ' + req.param('id'));
-    console.log(req.headers);
     var vidBuf;
     if (!streamMap.has(req.param('id'))) {
-        vidBuf = new VideoBuffer(120000000, req.param('id'));
+        vidBuf = new VideoBuffer(req.param('id'));
         streamMap.set(req.param('id'), vidBuf);
     } else {
         vidBuf = streamMap.get(req.param('id'));
     }
     var segmentLength = 0;
     req.on('data', function (data) {
-        console.log('Source: Receiving data for stream ' + req.param('id') + ' with length ' + data.length);
         segmentLength += data.length;
         vidBuf.append(data);
     });
@@ -41,36 +38,36 @@ router.post('/:id/*', function (req, res) {
         res.end();
     })
 });
-router.get('/', function (req, res) {
-    console.log('Client: Incoming request for stream ' + req.param('id') + ' with range ' + req.get('range'));
-    var range = req.header('range');
-    console.log(range);
-    if (!(typeof range === 'undefined')) {
-        var positions = range.replace('bytes=', '').split('-');
-        var start = parseInt(positions[0], 10);
-        var end = parseInt(positions[1].split('/')[0], 10);
-    }
-    else {
-        start = 0;
-        end = 49999;
-    }
-    if (isNaN(end)) {
-        end = 50000;
-    }
+router.head('/:id/:segmentNo', function (req, res) {
+    console.log('Head: Requesting segment number ' + req.param('segmentNo') + ' for stream with id ' + req.param('id'));
+    console.log('\tHead: Segment from stream with length ' + streamMap.get(req.param('id')).getSegmentData(req.param('segmentNo')).length);
+    res.set({
+        'Connection': 'keep-alive',
+        'Content-Type': 'video/webm',
+        'Accept-Ranges': 'bytes',
+        'Transfer-Encoding': 'chunked',
+        'Content-Length': streamMap.get(req.param('id')).getSegmentData(req.param('segmentNo')).length
+        //'Content-Range': streamMap.get(req.param('id')).getSegmentRange(req.param('segmentNo'))
+    });
+    res.end();
+});
+
+
+router.get('/:id/:segmentNo', function (req, res) {
+    console.log('Getting segment ' + req.param('segmentNo') + ' for stream ' + req.param('id'));
     if (streamMap.has(req.param('id'))) {
-        var noClient = count++;
         var bufferStream = streamMap.get(req.param('id'));
-        res.status(206).set(
+        console.log('\t Buffer Stream ' + bufferStream);
+        res.set(
             {
                 'Connection': 'keep-alive',
-                'Content-Range': 'bytes ' + start + '-' + bufferStream.bufferList.length + '/' + bufferStream.bufferList.length,//bufferStream.startingIndex + bufferStream.bufferList.length + 1,
                 'Content-Type': 'video/webm',
                 'Accept-Ranges': 'bytes',
                 'Transfer-Encoding': 'chunked',
-                'Content-Length': end - start
+                'Content-Length': bufferStream.getSegmentData(req.param('segmentNo')).length,
             });
-        console.log('Client: Getting stream and piping to client with id: ' + noClient + ' for stream with id ' + req.param('id'));
-        res.write(bufferStream.slice(start), 'binary');
+        console.log('Client: Getting stream and piping for stream with id ' + req.param('id'));
+        res.write(bufferStream.getSegmentData(req.param('segmentNo')), 'binary');
         res.end();
     }
     else {
@@ -79,5 +76,17 @@ router.get('/', function (req, res) {
     }
 });
 
+router.get('/:id', function (req, res) {
+    res.set({
+        'Connection': 'keep-alive',
+        'Content-Type': 'video/webm',
+        'Accept-Ranges': 'bytes',
+        'Transfer-Encoding': 'chunked',
+        'Content-Length': '432',
+        'Content-Range': '0-431/432'
+    });
+    res.write(streamMap.get(req.param('id')).bufferList.slice(0, 432));
+    res.end();
+});
 
 module.exports = router;
