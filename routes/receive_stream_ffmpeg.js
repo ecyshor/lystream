@@ -47,7 +47,6 @@ router.head('/:id/:segmentNo', function (req, res) {
         'Accept-Ranges': 'bytes',
         'Transfer-Encoding': 'chunked',
         'Content-Length': streamMap.get(req.param('id')).getSegmentData(req.param('segmentNo')).length
-        //'Content-Range': streamMap.get(req.param('id')).getSegmentRange(req.param('segmentNo'))
     });
     res.end();
 });

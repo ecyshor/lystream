@@ -23,7 +23,7 @@ var VideoBuffer = (function () {
             {allowSurrogateChars: false, skipNullAttributes: false,
                 headless: false, ignoreDecorators: false, stringify: {}});
         var date = new Date();
-//        date.setSeconds(date.getSeconds());
+        date.setSeconds(date.getSeconds() + 50);
         this.mpd.att({
             'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
             'xmlns': 'urn:mpeg:dash:schema:mpd:2011',
@@ -94,7 +94,6 @@ var VideoBuffer = (function () {
 
 
     VideoBuffer.prototype.updateMPD = function (segmentLength) {
-        started = true;
         if (this.segmentList.has(this.lastSegment)) {
             var lastSegment = this.segmentList.get(this.lastSegment);
             this.segmentList.set(this.lastSegment + 1, {
@@ -127,7 +126,8 @@ var VideoBuffer = (function () {
 
     VideoBuffer.prototype.getMPD = function () {
         this.segmentTemplate.att('startNumber', 0);
-        this.segmentTemplate.att('initialization', (this.lastSegment - 29 >= 0 ? this.lastSegment - 28 : 0) + '/');
+//        this.segmentTemplate.att('initialization', (this.lastSegment - 29 >= 0 ? this.lastSegment - 28 : 0) + '/');
+        this.segmentTemplate.att('initialization', this.lastSegment + '/');
         return this.mpd.toString();
     };
 
