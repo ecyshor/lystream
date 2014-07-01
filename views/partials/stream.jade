@@ -1,0 +1,13 @@
+#container
+    video(id='videoplayer')
+        | Your browser does not support HTML5 video.
+    script.
+        var url = "stream/22/mpd";
+        var context = new Dash.di.DashContext();
+        var player = new MediaPlayer(context);
+        player.startup();
+        player.autoplay = true;
+        player.debug = true;
+        player.liveEdge = true;
+        player.attachView(document.querySelector("#videoplayer"));
+        player.attachSource(url);

@@ -1,0 +1,300 @@
+isynth --enable-bzlib --enable-fontconfig --enable-frei0r --enable-gnutls --enab
+le-iconv --enable-libass --enable-libbluray --enable-libcaca --enable-libfreetyp
+e --enable-libgme --enable-libgsm --enable-libilbc --enable-libmodplug --enable-
+libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libope
+njpeg --enable-libopus --enable-librtmp --enable-libschroedinger --enable-libsox
+r --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab -
+-enable-libvo-aacenc --enable-libvo-amrwbenc --enable-libvorbis --enable-libvpx
+--enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-
+libxavs --enable-libxvid --enable-decklink --enable-zlib
+  libavutil      52. 89.100 / 52. 89.100
+  libavcodec     55. 66.100 / 55. 66.100
+  libavformat    55. 42.101 / 55. 42.101
+  libavdevice    55. 13.101 / 55. 13.101
+  libavfilter     4.  7.100 /  4.  7.100
+  libswscale      2.  6.100 /  2.  6.100
+  libswresample   0. 19.100 /  0. 19.100
+  libpostproc    52.  3.100 / 52.  3.100
+Input #0, dshow, from 'video=UScreenCapture':
+  Duration: N/A, start: 101764.698000, bitrate: N/A
+    Stream #0:0: Video: rawvideo, bgr24, 1920x1080, 10 tbr, 10000k tbn, 10 tbc
+[libvpx @ 0000000004266460] v1.3.0
+Output #0, stream_segment,ssegment, to 'http://localhost:3000/stream/22/%03d':
+  Metadata:
+    encoder         : Lavf55.42.101
+    Stream #0:0: Video: vp8 (libvpx), yuv420p, 1280x720, q=10-42, 1500 kb/s, 10
+fps, 90k tbn, 10 tbc
+    Metadata:
+      encoder         : Lavc55.66.100 libvpx
+Stream mapping:
+  Stream #0:0 -> #0:0 (rawvideo (native) -> vp8 (libvpx))
+Press [q] to stop, [?] for help
+frame=63135 fps=9.9 q=0.0 Lsize=N/A time=01:45:13.50 bitrate=N/A
+video:2380321kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxi
+ng overhead: unknown
+
+C:\Users\nreut>ffmpeg -rtbufsize 1500M -f dshow -r 10 -i video="UScreenCapture"
+-flags +global_header -vcodec libvpx -deadline realtime -profile:v 0 -keyint_min
+ 1 -g 1 -cpu-used 0 -vb 1500k -qmin 10 -qmax 42  -threads 4 -vf scale=-1:720 -bu
+fsize 1500 -slices 4 -map 0 -an -f stream_segment -segment_time 2 -segment_forma
+t webm -reset_timestamps 0 http://localhost:3000/stream/22/%03d
+ffmpeg version N-63861-g958168d Copyright (c) 2000-2014 the FFmpeg developers
+  built on Jun  9 2014 22:09:41 with gcc 4.8.2 (GCC)
+  configuration: --enable-gpl --enable-version3 --disable-w32threads --enable-av
+isynth --enable-bzlib --enable-fontconfig --enable-frei0r --enable-gnutls --enab
+le-iconv --enable-libass --enable-libbluray --enable-libcaca --enable-libfreetyp
+e --enable-libgme --enable-libgsm --enable-libilbc --enable-libmodplug --enable-
+libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libope
+njpeg --enable-libopus --enable-librtmp --enable-libschroedinger --enable-libsox
+r --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab -
+-enable-libvo-aacenc --enable-libvo-amrwbenc --enable-libvorbis --enable-libvpx
+--enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-
+libxavs --enable-libxvid --enable-decklink --enable-zlib
+  libavutil      52. 89.100 / 52. 89.100
+  libavcodec     55. 66.100 / 55. 66.100
+  libavformat    55. 42.101 / 55. 42.101
+  libavdevice    55. 13.101 / 55. 13.101
+  libavfilter     4.  7.100 /  4.  7.100
+  libswscale      2.  6.100 /  2.  6.100
+  libswresample   0. 19.100 /  0. 19.100
+  libpostproc    52.  3.100 / 52.  3.100
+Input #0, dshow, from 'video=UScreenCapture':
+  Duration: N/A, start: 108826.354000, bitrate: N/A
+    Stream #0:0: Video: rawvideo, bgr24, 1920x1080, 10 tbr, 10000k tbn, 10 tbc
+[libvpx @ 00000000042f7300] v1.3.0
+Output #0, stream_segment,ssegment, to 'http://localhost:3000/stream/22/%03d':
+  Metadata:
+    encoder         : Lavf55.42.101
+    Stream #0:0: Video: vp8 (libvpx), yuv420p, 1280x720, q=10-42, 1500 kb/s, 10
+fps, 90k tbn, 10 tbc
+    Metadata:
+      encoder         : Lavc55.66.100 libvpx
+Stream mapping:
+  Stream #0:0 -> #0:0 (rawvideo (native) -> vp8 (libvpx))
+Press [q] to stop, [?] for help
+frame=  496 fps=9.9 q=0.0 Lsize=N/A time=00:00:49.60 bitrate=N/A
+video:20500kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing
+ overhead: unknown
+
+C:\Users\nreut>ffmpeg -rtbufsize 1500M -f dshow -r 10 -i video="UScreenCapture"
+-flags +global_header -vcodec libvpx -deadline realtime -profile:v 0 -keyint_min
+ 1 -g 1 -cpu-used 0 -vb 1500k -qmin 10 -qmax 42  -threads 4 -vf scale=-1:720 -bu
+fsize 1500 -slices 4 -map 0 -an -f stream_segment -segment_time 2 -segment_forma
+t webm -reset_timestamps 0 http://localhost:3000/stream/22/%03d
+ffmpeg version N-63861-g958168d Copyright (c) 2000-2014 the FFmpeg developers
+  built on Jun  9 2014 22:09:41 with gcc 4.8.2 (GCC)
+  configuration: --enable-gpl --enable-version3 --disable-w32threads --enable-av
+isynth --enable-bzlib --enable-fontconfig --enable-frei0r --enable-gnutls --enab
+le-iconv --enable-libass --enable-libbluray --enable-libcaca --enable-libfreetyp
+e --enable-libgme --enable-libgsm --enable-libilbc --enable-libmodplug --enable-
+libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libope
+njpeg --enable-libopus --enable-librtmp --enable-libschroedinger --enable-libsox
+r --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab -
+-enable-libvo-aacenc --enable-libvo-amrwbenc --enable-libvorbis --enable-libvpx
+--enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-
+libxavs --enable-libxvid --enable-decklink --enable-zlib
+  libavutil      52. 89.100 / 52. 89.100
+  libavcodec     55. 66.100 / 55. 66.100
+  libavformat    55. 42.101 / 55. 42.101
+  libavdevice    55. 13.101 / 55. 13.101
+  libavfilter     4.  7.100 /  4.  7.100
+  libswscale      2.  6.100 /  2.  6.100
+  libswresample   0. 19.100 /  0. 19.100
+  libpostproc    52.  3.100 / 52.  3.100
+Input #0, dshow, from 'video=UScreenCapture':
+  Duration: N/A, start: 108886.682000, bitrate: N/A
+    Stream #0:0: Video: rawvideo, bgr24, 1920x1080, 10 tbr, 10000k tbn, 10 tbc
+[libvpx @ 00000000042d7300] v1.3.0
+Output #0, stream_segment,ssegment, to 'http://localhost:3000/stream/22/%03d':
+  Metadata:
+    encoder         : Lavf55.42.101
+    Stream #0:0: Video: vp8 (libvpx), yuv420p, 1280x720, q=10-42, 1500 kb/s, 10
+fps, 90k tbn, 10 tbc
+    Metadata:
+      encoder         : Lavc55.66.100 libvpx
+Stream mapping:
+  Stream #0:0 -> #0:0 (rawvideo (native) -> vp8 (libvpx))
+Press [q] to stop, [?] for help
+av_interleaved_write_frame(): Unknown error00:39.80 bitrate=N/A
+[stream_segment,ssegment @ 0000000002b8e840] Failure occurred when ending segmen
+t 'http://localhost:3000/stream/22/020'
+frame=  403 fps=9.9 q=0.0 Lsize=N/A time=00:00:40.30 bitrate=N/A
+video:19046kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing
+ overhead: unknown
+Conversion failed!
+
+C:\Users\nreut>ffmpeg -rtbufsize 1500M -f dshow -r 10 -i video="UScreenCapture"
+-flags +global_header -vcodec libvpx -deadline realtime -profile:v 0 -keyint_min
+ 1 -g 1 -cpu-used 0 -vb 1500k -qmin 10 -qmax 42  -threads 4 -vf scale=-1:720 -bu
+fsize 1500 -slices 4 -map 0 -an -f stream_segment -segment_time 2 -segment_forma
+t webm -reset_timestamps 0 http://localhost:3000/stream/22/%03d
+ffmpeg version N-63861-g958168d Copyright (c) 2000-2014 the FFmpeg developers
+  built on Jun  9 2014 22:09:41 with gcc 4.8.2 (GCC)
+  configuration: --enable-gpl --enable-version3 --disable-w32threads --enable-av
+isynth --enable-bzlib --enable-fontconfig --enable-frei0r --enable-gnutls --enab
+le-iconv --enable-libass --enable-libbluray --enable-libcaca --enable-libfreetyp
+e --enable-libgme --enable-libgsm --enable-libilbc --enable-libmodplug --enable-
+libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libope
+njpeg --enable-libopus --enable-librtmp --enable-libschroedinger --enable-libsox
+r --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab -
+-enable-libvo-aacenc --enable-libvo-amrwbenc --enable-libvorbis --enable-libvpx
+--enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-
+libxavs --enable-libxvid --enable-decklink --enable-zlib
+  libavutil      52. 89.100 / 52. 89.100
+  libavcodec     55. 66.100 / 55. 66.100
+  libavformat    55. 42.101 / 55. 42.101
+  libavdevice    55. 13.101 / 55. 13.101
+  libavfilter     4.  7.100 /  4.  7.100
+  libswscale      2.  6.100 /  2.  6.100
+  libswresample   0. 19.100 /  0. 19.100
+  libpostproc    52.  3.100 / 52.  3.100
+Input #0, dshow, from 'video=UScreenCapture':
+  Duration: N/A, start: 108929.105000, bitrate: N/A
+    Stream #0:0: Video: rawvideo, bgr24, 1920x1080, 10 tbr, 10000k tbn, 10 tbc
+[libvpx @ 00000000042a7300] v1.3.0
+Output #0, stream_segment,ssegment, to 'http://localhost:3000/stream/22/%03d':
+  Metadata:
+    encoder         : Lavf55.42.101
+    Stream #0:0: Video: vp8 (libvpx), yuv420p, 1280x720, q=10-42, 1500 kb/s, 10
+fps, 90k tbn, 10 tbc
+    Metadata:
+      encoder         : Lavc55.66.100 libvpx
+Stream mapping:
+  Stream #0:0 -> #0:0 (rawvideo (native) -> vp8 (libvpx))
+Press [q] to stop, [?] for help
+frame=  436 fps=9.9 q=0.0 Lsize=N/A time=00:00:43.60 bitrate=N/A
+video:20531kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing
+ overhead: unknown
+
+C:\Users\nreut>ffmpeg -rtbufsize 1500M -f dshow -r 10 -i video="UScreenCapture"
+-flags +global_header -vcodec libvpx -deadline realtime -profile:v 0 -keyint_min
+ 1 -g 1 -cpu-used 0 -vb 1500k -qmin 10 -qmax 42  -threads 4 -vf scale=-1:720 -bu
+fsize 1500 -slices 4 -map 0 -an -f stream_segment -segment_time 2 -segment_forma
+t webm -reset_timestamps 0 http://localhost:3000/stream/22/%03d
+ffmpeg version N-63861-g958168d Copyright (c) 2000-2014 the FFmpeg developers
+  built on Jun  9 2014 22:09:41 with gcc 4.8.2 (GCC)
+  configuration: --enable-gpl --enable-version3 --disable-w32threads --enable-av
+isynth --enable-bzlib --enable-fontconfig --enable-frei0r --enable-gnutls --enab
+le-iconv --enable-libass --enable-libbluray --enable-libcaca --enable-libfreetyp
+e --enable-libgme --enable-libgsm --enable-libilbc --enable-libmodplug --enable-
+libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libope
+njpeg --enable-libopus --enable-librtmp --enable-libschroedinger --enable-libsox
+r --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab -
+-enable-libvo-aacenc --enable-libvo-amrwbenc --enable-libvorbis --enable-libvpx
+--enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-
+libxavs --enable-libxvid --enable-decklink --enable-zlib
+  libavutil      52. 89.100 / 52. 89.100
+  libavcodec     55. 66.100 / 55. 66.100
+  libavformat    55. 42.101 / 55. 42.101
+  libavdevice    55. 13.101 / 55. 13.101
+  libavfilter     4.  7.100 /  4.  7.100
+  libswscale      2.  6.100 /  2.  6.100
+  libswresample   0. 19.100 /  0. 19.100
+  libpostproc    52.  3.100 / 52.  3.100
+Input #0, dshow, from 'video=UScreenCapture':
+  Duration: N/A, start: 161751.293000, bitrate: N/A
+    Stream #0:0: Video: rawvideo, bgr24, 1920x1080, 10 tbr, 10000k tbn, 10 tbc
+[libvpx @ 0000000004457300] v1.3.0
+Output #0, stream_segment,ssegment, to 'http://localhost:3000/stream/22/%03d':
+  Metadata:
+    encoder         : Lavf55.42.101
+    Stream #0:0: Video: vp8 (libvpx), yuv420p, 1280x720, q=10-42, 1500 kb/s, 10
+fps, 90k tbn, 10 tbc
+    Metadata:
+      encoder         : Lavc55.66.100 libvpx
+Stream mapping:
+  Stream #0:0 -> #0:0 (rawvideo (native) -> vp8 (libvpx))
+Press [q] to stop, [?] for help
+frame= 1438 fps=9.9 q=0.0 Lsize=N/A time=00:02:23.80 bitrate=N/A
+video:48048kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing
+ overhead: unknown
+
+C:\Users\nreut>ffmpeg -rtbufsize 1500M -f dshow -r 10 -i video="UScreenCapture"
+-flags +global_header -vcodec libvpx -deadline realtime -profile:v 0 -keyint_min
+ 1 -g 1 -cpu-used 0 -vb 1500k -qmin 10 -qmax 42  -threads 4 -vf scale=-1:720 -bu
+fsize 1500 -slices 4 -map 0 -an -f stream_segment -segment_time 2 -segment_forma
+t webm -reset_timestamps 0 http://localhost:3000/stream/22/%03d
+ffmpeg version N-63861-g958168d Copyright (c) 2000-2014 the FFmpeg developers
+  built on Jun  9 2014 22:09:41 with gcc 4.8.2 (GCC)
+  configuration: --enable-gpl --enable-version3 --disable-w32threads --enable-av
+isynth --enable-bzlib --enable-fontconfig --enable-frei0r --enable-gnutls --enab
+le-iconv --enable-libass --enable-libbluray --enable-libcaca --enable-libfreetyp
+e --enable-libgme --enable-libgsm --enable-libilbc --enable-libmodplug --enable-
+libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libope
+njpeg --enable-libopus --enable-librtmp --enable-libschroedinger --enable-libsox
+r --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab -
+-enable-libvo-aacenc --enable-libvo-amrwbenc --enable-libvorbis --enable-libvpx
+--enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-
+libxavs --enable-libxvid --enable-decklink --enable-zlib
+  libavutil      52. 89.100 / 52. 89.100
+  libavcodec     55. 66.100 / 55. 66.100
+  libavformat    55. 42.101 / 55. 42.101
+  libavdevice    55. 13.101 / 55. 13.101
+  libavfilter     4.  7.100 /  4.  7.100
+  libswscale      2.  6.100 /  2.  6.100
+  libswresample   0. 19.100 /  0. 19.100
+  libpostproc    52.  3.100 / 52.  3.100
+Input #0, dshow, from 'video=UScreenCapture':
+  Duration: N/A, start: 163986.621000, bitrate: N/A
+    Stream #0:0: Video: rawvideo, bgr24, 1920x1080, 10 tbr, 10000k tbn, 10 tbc
+[libvpx @ 00000000042e7300] v1.3.0
+Output #0, stream_segment,ssegment, to 'http://localhost:3000/stream/22/%03d':
+  Metadata:
+    encoder         : Lavf55.42.101
+    Stream #0:0: Video: vp8 (libvpx), yuv420p, 1280x720, q=10-42, 1500 kb/s, 10
+fps, 90k tbn, 10 tbc
+    Metadata:
+      encoder         : Lavc55.66.100 libvpx
+Stream mapping:
+  Stream #0:0 -> #0:0 (rawvideo (native) -> vp8 (libvpx))
+Press [q] to stop, [?] for help
+frame= 1874 fps=9.9 q=0.0 Lsize=N/A time=00:03:07.40 bitrate=N/A
+video:69070kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing
+ overhead: unknown
+
+C:\Users\nreut>bower
+'bower' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\nreut>bower
+'bower' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\nreut>npm
+
+Usage: npm <command>
+
+where <command> is one of:
+    add-user, adduser, apihelp, author, bin, bugs, c, cache,
+    completion, config, ddp, dedupe, deprecate, docs, edit,
+    explore, faq, find, find-dupes, get, help, help-search,
+    home, i, info, init, install, isntall, issues, la, link,
+    list, ll, ln, login, ls, outdated, owner, pack, prefix,
+    prune, publish, r, rb, rebuild, remove, repo, restart, rm,
+    root, run-script, s, se, search, set, show, shrinkwrap,
+    star, stars, start, stop, submodule, t, tag, test, tst, un,
+    uninstall, unlink, unpublish, unstar, up, update, v,
+    version, view, whoami
+
+npm <cmd> -h     quick help on <cmd>
+npm -l           display full usage info
+npm faq          commonly asked questions
+npm help <term>  search for help on <term>
+npm help npm     involved overview
+
+Specify configs in the ini-formatted file:
+    C:\Users\nreut\.npmrc
+or on the command line via: npm <command> --key value
+Config info can be viewed via: npm help config
+
+npm@1.4.9 C:\Program Files\nodejs\node_modules\npm
+
+C:\Users\nreut>bower
+'bower' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\nreut>ffmpeg -rtbufsize 1500M -f dshow -r 10 -i video="UScreenCapture"
+-flags +global_header -vcodec libvpx -deadline realtime -profile:v 0 -keyint_min
+ 1 -g 1 -cpu-used 0 -vb 1500k -qmin 10 -qmax 42  -threads 4 -vf scale=-1:720 -bu
+fsize 1500 -slices 4 -map 0 -an -f stream_segment -segment_time 2 -segment_forma
+t webm -reset_timestamps 0 http://localhost:3000/stream/22/%03d

@@ -1,8 +1,58 @@
 doctype html
-html
+html(ng-app='streamApp')
     head
         title= title
+        link(rel='stylesheet', href='./components/bootstrap/dist/css/bootstrap.min.css')
+        link(rel='stylesheet', href='./components/bootswatch/cyborg/bootstrap.min.css')
+        link(rel='stylesheet', href='/components/angular/angular-csp.css')
         link(rel='stylesheet', href='/stylesheets/style.css')
+    body(ng-cloak)
+        div.navbar.navbar-default.navbar-fixed-top(role='navigation',ng-controller='NavCtrl')
+            .navbar-header
+                button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-responsive-collapse')
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+                a.navbar-brand(href='#') lystream
+            .navbar-collapse.collapse.navbar-responsive-collapse
+                ul.nav.navbar-nav
+                    li.active(access-level='accessLevels.public',active-nav)
+                        a(href='#') Home
+                    li(access-level='accessLevels.public')
+                        a(href='#') Browse
+                form.navbar-form.navbar-left
+                    input.form-control.col-lg-8(type='text', placeholder='Search')
+                ul.nav.navbar-nav.navbar-right
+                    li
+                        a(href='#') Link
+                    li.dropdown
+                        a.dropdown-toggle(href='#', data-toggle='dropdown')
+                            | Account
+                            b.caret
+                        ul.dropdown-menu(role="menu")
+                            li
+                                a(href='/login') Login
+                            li
+                                a(href='#') Register
+                            li.divider
+                            li
+                                a(href='#') Why register?
+        #wrap
+            block content
+        #footer
+            .container
+                p.muted-credit Reut Nicu
+        script(src='/components/jquery/dist/jquery.min.js')
         script(src='/javascripts/dash/dash.all.js')
-    body
-        block content
+        script(src='/components/angular/angular.min.js')
+        script(src='/components/angular-ui-router/release/angular-ui-router.min.js')
+        script(src='/components/angular-cookies/angular-cookies.min.js')
+        script(src='/components/angular-bootstrap/ui-bootstrap.min.js')
+        script(src='/components/angular-bootstrap/ui-bootstrap-tpls.min.js')
+        script(src='/javascripts/angular/app.js')
+        script(src='/javascripts/angular/services.js')
+        script(src='/javascripts/angular/controllers.js')
+        script(src='/javascripts/angular/directives.js')
+        script(src='/javascripts/angular/filters.js')
+        script(src='/javascripts/angular/routingConfig.js')
+        script(src='/components/bootstrap/dist/js/bootstrap.min.js')
