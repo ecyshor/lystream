@@ -23,17 +23,15 @@ html(ng-app='streamApp')
                 form.navbar-form.navbar-left
                     input.form-control.col-lg-8(type='text', placeholder='Search')
                 ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href='#') Link
-                    li.dropdown
-                        a.dropdown-toggle(href='#', data-toggle='dropdown')
+                    li(dropdown,access-level='accessLevels.anon')
+                        a.dropdown-toggle(href)
                             | Account
                             b.caret
                         ul.dropdown-menu(role="menu")
                             li
-                                a(href='/login') Login
+                                a(ui-sref='anon.login') Login
                             li
-                                a(href='#') Register
+                                a(ui-sref='anon.register') Register
                             li.divider
                             li
                                 a(href='#') Why register?
@@ -47,7 +45,6 @@ html(ng-app='streamApp')
         script(src='/components/angular/angular.min.js')
         script(src='/components/angular-ui-router/release/angular-ui-router.min.js')
         script(src='/components/angular-cookies/angular-cookies.min.js')
-        script(src='/components/angular-bootstrap/ui-bootstrap.min.js')
         script(src='/components/angular-bootstrap/ui-bootstrap-tpls.min.js')
         script(src='/javascripts/angular/app.js')
         script(src='/javascripts/angular/services.js')
@@ -55,4 +52,3 @@ html(ng-app='streamApp')
         script(src='/javascripts/angular/directives.js')
         script(src='/javascripts/angular/filters.js')
         script(src='/javascripts/angular/routingConfig.js')
-        script(src='/components/bootstrap/dist/js/bootstrap.min.js')

@@ -38,13 +38,38 @@ angular.module('streamApp', [
         })
         .state('anon.login', {
             url: '/login/',
-            templateUrl: 'login',
-            controller: 'LoginCtrl'
+            onEnter: function ($stateParams, $state, $modal, $resource) {
+                $modal.open({
+                    templateUrl: "login",
+                    resolve: {
+                        item: function () {
+                        }
+                    },
+                    controller: 'LoginCtrl'
+                }).result.then(function (result) {
+                        if (result) {
+                            return $state.transitionTo("items");
+                        }
+                    });
+            }
         })
         .state('anon.register', {
             url: '/register/',
-            templateUrl: 'register',
-            controller: 'RegisterCtrl'
+            onEnter: function ($stateParams, $state, $modal, $resource) {
+                $modal.open({
+                    templateUrl: "register",
+                    resolve: {
+                        item: function () {
+                            new Item(123).get();
+                        }
+                    },
+                    controller: 'RegisterCtrl'
+                }).result.then(function (result) {
+                        if (result) {
+                            return $state.transitionTo("items");
+                        }
+                    });
+            }
         });
 
     // Regular user routes
