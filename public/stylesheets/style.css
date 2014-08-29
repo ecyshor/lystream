@@ -1,38 +1,32 @@
 /* Sticky footer styles
 -------------------------------------------------- */
 
-html,
+html {
+    position: relative;
+    min-height: 100%;
+}
+
 body {
-    height: 100%;
-    /* The html and body elements cannot have any padding or margin. */
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
 }
 
 .navbar {
     padding-right: 5em;
+    margin-bottom: 1em;
 }
 
-/* Wrapper for page content to push down footer */
-#wrap {
-    min-height: 100%;
-    height: auto !important;
-    height: 100%;
-    /* Negative indent footer by it's height */
-    margin: 0 auto -60px;
-}
 
-/* Set the fixed height of the footer here */
-#push,
-#footer {
-    height: 60px;
-}
-
-#footer {
-    background-color: black;
-}
-
-/* Lastly, apply responsive CSS fixes as necessary */
 @media (max-width: 767px) {
-    #footer {
+    .footer {
         margin-left: -20px;
         margin-right: -20px;
         padding-left: 20px;
@@ -48,3 +42,4 @@ video {
     width: 80%;
     height: 80%;
 }
+

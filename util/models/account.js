@@ -7,10 +7,12 @@ var mongoose = require('mongoose'),
     streamModel = require('./stream');
 
 var Account = new Schema({
-    nickname: String
+    username: String
 });
 
-Account.plugin(passportLocalMongoose);
+Account.plugin(passportLocalMongoose, {
+    usernameField: 'email'
+});
 
 Account.post('remove', function (doc) {
     console.log('Removing user with id ' + doc._id + ' and user streams.');

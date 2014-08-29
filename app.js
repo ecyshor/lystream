@@ -21,7 +21,10 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-app.use(session({ secret: 'keyboard cat' }));
+app.use(session({
+    secret: 'keyboard cat',
+    saveUninitialized: true,
+    resave: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -30,26 +33,26 @@ app.use('/:index(home)?', routes);
 app.use('/stream', streamingRoutes);
 app.use('/auth', auth);
 ///// catch 404 and forward to error handler
-/*app.use(function (req, res, next) {
- var err = new Error('Not Found');
+app.use(function (req, res, next) {
+    var err = new Error('Not Found');
     err.status = 404;
     next(err);
- });*/
+});
 
 /// error handlers
 
 // development error handler
 // will print stacktrace
-//if (app.get('env') === 'development') {
+if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
-        res.status(err.status || 500);
-        console.log('Error 500: ' + err.message + '\n' + err);
+        res.status(err.status);
+        console.log('Error : ' + err.message + '\n' + err);
         res.render('error', {
             message: err.message,
             error: err
         });
     });
-//}
+}
 
 // production error handler
 // no stacktraces leaked to user

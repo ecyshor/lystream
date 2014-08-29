@@ -41,6 +41,7 @@ angular.module('streamApp').
 
         $scope.register = function () {
             Auth.register({
+                    email: $scope.email,
                     username: $scope.username,
                     password: $scope.password,
                     role: $scope.role

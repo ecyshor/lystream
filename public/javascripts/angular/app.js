@@ -4,7 +4,8 @@
 angular.module('streamApp', [
     'ngCookies',
     'ui.router',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    'restangular'
 ]).config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
     var access = routingConfig.accessLevels;
@@ -21,55 +22,56 @@ angular.module('streamApp', [
         .state('public.404', {
             url: '/404/',
             templateUrl: '404'
+        })
+        .state('public.home', {
+            url: '/',
+            templateUrl: '/home'
         });
 
     // Anonymous routes
     $stateProvider
         .state('anon', {
             abstract: true,
-            template: "<ui-view/>",
+            template: "<ui-view></ui-view>",
             data: {
                 access: access.anon
             }
         })
-        .state('anon.home', {
-            url: '/',
-            temmplateUrl: 'home'
-        })
         .state('anon.login', {
-            url: '/login/',
-            onEnter: function ($stateParams, $state, $modal, $resource) {
-                $modal.open({
-                    templateUrl: "login",
-                    resolve: {
-                        item: function () {
-                        }
-                    },
-                    controller: 'LoginCtrl'
+            url: '/auth/login/',
+            templateUrl: '/auth/login'
+            /*onEnter: function ($stateParams, $state, $modal, $resource, $log) {
+             $log.log($state);
+             $modal.open({
+             templateUrl: "auth/login",
+             controller: 'LoginCtrl'
                 }).result.then(function (result) {
                         if (result) {
-                            return $state.transitionTo("items");
-                        }
+             return $state.go('user.home');
+             } else {
+             return $state.go('^');
+             }
                     });
-            }
+             }*/
         })
         .state('anon.register', {
-            url: '/register/',
-            onEnter: function ($stateParams, $state, $modal, $resource) {
-                $modal.open({
-                    templateUrl: "register",
-                    resolve: {
+            url: '/auth/register/',
+            templateUrl: '/auth/register',
+            controller: 'RegisterCtrl'
+            /* onEnter: function ($stateParams, $state, $modal, Restangular) {
+             $modal.open({
+             templateUrl: "auth/register",
+             resolve: {
                         item: function () {
-                            new Item(123).get();
                         }
                     },
                     controller: 'RegisterCtrl'
                 }).result.then(function (result) {
                         if (result) {
-                            return $state.transitionTo("items");
-                        }
+             return $state.go('user.home');
+             }
                     });
-            }
+             }*/
         });
 
     // Regular user routes
@@ -80,10 +82,6 @@ angular.module('streamApp', [
             data: {
                 access: access.user
             }
-        })
-        .state('user.home', {
-            url: '/',
-            templateUrl: 'home'
         })
         .state('user.private', {
             abstract: true,
@@ -167,21 +165,20 @@ angular.module('streamApp', [
     });
 
 }])
-
     .run(['$rootScope', '$state', 'Auth', function ($rootScope, $state, Auth) {
-
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
             if (!Auth.authorize(toState.data.access)) {
                 $rootScope.error = "Seems like you tried accessing a route you don't have access to...";
                 event.preventDefault();
 
                 if (fromState.url === '^') {
-                    if (Auth.isLoggedIn()) {
-                        $state.go('user.home');
+                    /*if (Auth.isLoggedIn()) {
+                     $state.go('user.home');
                     } else {
                         $rootScope.error = null;
-                        $state.go('anon.login');
-                    }
+                     $state.go('anon.home');
+                     }*/
+                    $state.go('public.home');
                 }
             }
         });

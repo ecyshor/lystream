@@ -7,7 +7,8 @@
 // In this case it is a simple value service.
 angular.module('streamApp').
     factory(
-    'Auth', function ($http, $cookieStore) {
+    'Auth', function ($http, $cookieStore, $log) {
+        $log.log('Entering Auth service');
         var accessLevels = routingConfig.accessLevels
             , userRoles = routingConfig.userRoles
             , currentUser = $cookieStore.get('user') || { username: '', role: userRoles.public };
@@ -33,13 +34,14 @@ angular.module('streamApp').
                 return user.role.title === userRoles.user.title || user.role.title === userRoles.admin.title;
             },
             register: function (user, success, error) {
-                $http.post('/register', user).success(function (res) {
+                $log.log('Registering user with details: ' + JSON.stringify(user));
+                $http.post('/auth/register', user).success(function (res) {
                     changeUser(res);
                     success();
                 }).error(error);
             },
             login: function (user, success, error) {
-                $http.post('/login', user).success(function (user) {
+                $http.post('/auth/login', user).success(function (user) {
                     changeUser(user);
                     success(user);
                 }).error(error);
