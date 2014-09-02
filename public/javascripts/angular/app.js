@@ -172,12 +172,12 @@ angular.module('streamApp', [
                 event.preventDefault();
 
                 if (fromState.url === '^') {
-                    /*if (Auth.isLoggedIn()) {
+                    if (Auth.isLoggedIn()) {
                      $state.go('user.home');
                     } else {
                         $rootScope.error = null;
                      $state.go('anon.home');
-                     }*/
+                    }
                     $state.go('public.home');
                 }
             }
