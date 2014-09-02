@@ -2,11 +2,7 @@
     "name": "lystream",
     "version": "0.0.1",
     "private": true,
-    "scripts": {
-//        "start": "grunt dev",
-//        "test": "grunt test",
-//        "postinstall": "bower install"
-    },
+
     "dependencies": {
         "body-parser": "~1.0.0",
         "bower": "~1.3.5",
