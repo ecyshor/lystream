@@ -6,15 +6,11 @@ var router = express.Router();
 var Account = require('../util/models/account');
 var passport = require('../util/lib/setup_passport');
 
-router.get('/login', function (req, res) {
-    res.render('partials/auth/login');
-});
-router.get('/register', function (req, res) {
-    res.render('partials/auth/register');
-});
+
 router.post('/login', passport.authenticate('local'), function (req, res) {
     res.redirect('/');
 });
+
 
 router.post('/register', function (req, res) {
     console.log('Registering account with infos: ' + JSON.stringify(req.body));

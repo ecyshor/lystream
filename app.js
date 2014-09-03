@@ -1,15 +1,20 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('static-favicon');
-var morgan = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var session = require('express-session');
-var passport = require('./util/lib/setup_passport');
-var routes = require('./routes/index');
-var streamingRoutes = require('./routes/receive_stream_ffmpeg');
-var auth = require('./routes/authentication');
-var app = express();
+var express = require('express')
+    , path = require('path')
+    , favicon = require('static-favicon')
+    , morgan = require('morgan')
+    , cookieParser = require('cookie-parser')
+    , bodyParser = require('body-parser')
+    , session = require('express-session')
+    , passport = require('./util/lib/setup_passport')
+    , routes = require('./routes/index')
+    , streamingRoutes = require('./routes/receive_stream_ffmpeg')
+    , csrf = require('csurf')
+    , methodOverride = require('method-override')
+    , auth = require('./routes/authentication')
+    , log = require('debug')('lystream:server');
+
+var app = module.exports = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,18 +24,28 @@ app.use(favicon());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
+app.use(methodOverride());
 app.use(cookieParser());
 app.use(session({
     secret: 'keyboard cat',
     saveUninitialized: true,
     resave: true}));
+
+var env = process.env.NODE_ENV || 'development';
+if ('development' === env || 'production' === env) {
+    app.use(csrf());
+    app.use(function (req, res, next) {
+        res.cookie('XSRF-TOKEN', req.csrfToken());
+        next();
+    });
+}
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/:index(home)?', routes);
-app.use('/stream', streamingRoutes);
-app.use('/auth', auth);
+app.use('/*', routes);
+
 ///// catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
@@ -45,7 +60,7 @@ app.use(function (req, res, next) {
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.status);
-        console.log('Error : ' + err.message + '\n' + err);
+        log('Error : ' + err.message + '\n' + err);
         res.render('error', {
             message: err.message,
             error: err
@@ -57,10 +72,9 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
     res.status(err.status || 500);
+    log('Error ' + err.message);
     res.render('error', {
         message: err.message,
         error: {}
     });
 });
-
-module.exports = app;
