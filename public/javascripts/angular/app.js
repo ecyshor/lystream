@@ -22,10 +22,6 @@ angular.module('streamApp', [
         .state('public.404', {
             url: '/404/',
             templateUrl: '404'
-        })
-        .state('public.home', {
-            url: '/',
-            templateUrl: '/home'
         });
 
     // Anonymous routes
@@ -53,6 +49,9 @@ angular.module('streamApp', [
              }
                     });
              }*/
+        }) .state('anon.home', {
+            url: '/',
+            templateUrl: '/home'
         })
         .state('anon.register', {
             url: '/auth/register/',
@@ -178,7 +177,6 @@ angular.module('streamApp', [
                         $rootScope.error = null;
                      $state.go('anon.home');
                     }
-                    $state.go('public.home');
                 }
             }
         });

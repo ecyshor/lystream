@@ -6,11 +6,8 @@ var express = require('express')
     , bodyParser = require('body-parser')
     , session = require('express-session')
     , passport = require('./util/lib/setup_passport')
-    , routes = require('./routes/index')
-    , streamingRoutes = require('./routes/receive_stream_ffmpeg')
     , csrf = require('csurf')
     , methodOverride = require('method-override')
-    , auth = require('./routes/authentication')
     , log = require('debug')('lystream:server');
 
 var app = module.exports = express();
@@ -43,8 +40,16 @@ if ('development' === env || 'production' === env) {
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
+//Routes
+app.route('/')
+    .get(function (req, res) {
+        log('Rendering index');
+        res.render('index');
+    });
+app.use('/home', require('./routes/index'));
+app.use('/stream', require('./routes/receive_stream_ffmpeg'));
+app.use('/auth', require('./routes/authentication'));
 
-app.use('/*', routes);
 
 ///// catch 404 and forward to error handler
 app.use(function (req, res, next) {
