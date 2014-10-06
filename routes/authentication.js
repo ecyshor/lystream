@@ -17,13 +17,25 @@ router.post('/register', function (req, res) {
     Account.register(
         new Account({
             username: req.body.username,
-            email: req.body.email}),
+            email: req.body.email,
+            role: req.body.role
+        }),
         req.body.password,
         function (err, account) {
+            try {
+                User.validate(req.body);
+            }
+            catch (err) {
+                return res.send(400, err.message);
+            }
             debug('Register outcome: \n Error: ' + JSON.stringify(err) + '\nAccount: ' + JSON.stringify(account));
-            if (err) {
+            if (err === 'UserAlreadyExists') {
+                debug('Error: user already exists in database with email %s', account.email);
+                return res.send(403, "User already exists");
+            }
+            else if (err) {
                 debug('Error registering new user from request: ' + req + ' with error message: ' + err);
-                return res.render('register', { account: account });
+                res.send(500);
             }
             res.redirect('/');
         });

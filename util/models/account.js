@@ -1,13 +1,18 @@
 /**
  * Created by nreut on 26-Jun-14.
  */
-var mongoose = require('mongoose'),
+var mongoose = require('../lib/setup_mongoose'),
     Schema = mongoose.Schema,
     passportLocalMongoose = require('passport-local-mongoose'),
-    streamModel = require('./stream');
+    streamModel = require('./stream'),
+    debug = require('debug')('lystream:modeL:user');
 
 var Account = new Schema({
-    username: String
+    username: String,
+    role: {
+        bitMask: String,
+        title: String
+    }
 });
 
 Account.plugin(passportLocalMongoose, {
@@ -15,7 +20,7 @@ Account.plugin(passportLocalMongoose, {
 });
 
 Account.post('remove', function (doc) {
-    console.log('Removing user with id ' + doc._id + ' and user streams.');
+    debug('Removing user with id ' + doc._id + ' and user streams.');
     streamModel.remove({user_id: doc._id});
 });
 
