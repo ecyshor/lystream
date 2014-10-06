@@ -41,15 +41,20 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 //Routes
-app.route('/')
+
+app.use('/home', require('./routes/index'));
+app.use('/stream', require('./routes/receive_stream_ffmpeg'));
+app.use('/auth', require('./routes/authentication'));
+app.route('/partials/*')
+    .get(function (req, res) {
+        var requestedView = path.join('./', req.url);
+        res.render(requestedView);
+    });
+app.route('/*')
     .get(function (req, res) {
         log('Rendering index');
         res.render('index');
     });
-app.use('/home', require('./routes/index'));
-app.use('/stream', require('./routes/receive_stream_ffmpeg'));
-app.use('/auth', require('./routes/authentication'));
-
 
 ///// catch 404 and forward to error handler
 app.use(function (req, res, next) {

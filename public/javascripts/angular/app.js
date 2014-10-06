@@ -34,8 +34,8 @@ angular.module('streamApp', [
             }
         })
         .state('anon.login', {
-            url: '/auth/login/',
-            templateUrl: '/auth/login'
+            url: '/login/',
+            templateUrl: '/partials/auth/login'
             /*onEnter: function ($stateParams, $state, $modal, $resource, $log) {
              $log.log($state);
              $modal.open({
@@ -54,8 +54,8 @@ angular.module('streamApp', [
             templateUrl: '/home'
         })
         .state('anon.register', {
-            url: '/auth/register/',
-            templateUrl: '/auth/register',
+            url: '/register/',
+            templateUrl: '/partials/auth/register',
             controller: 'RegisterCtrl'
             /* onEnter: function ($stateParams, $state, $modal, Restangular) {
              $modal.open({
