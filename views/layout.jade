@@ -18,12 +18,14 @@ html(ng-app='streamApp')
                 .navbar-collapse.collapse.navbar-responsive-collapse
                     ul.nav.navbar-nav
                         li.active(access-level='accessLevels.public',active-nav,ui-sref-active='active')
-                            a(href='#') Home
+                            a(ui-sref='anon.home', access-level='accessLevels.anon') Home
+                            a(ui-sref='user.home', access-level='accessLevels.user') Home
                         li(access-level='accessLevels.public')
-                            a(href='#') Browse
+                            a(ui-sref='public.browse') Browse
                     form.navbar-form.navbar-left
                         input.form-control.col-lg-8(type='text', placeholder='Search')
                     ul.nav.navbar-nav.navbar-right
+                        //Menu for anon user
                         li(dropdown,access-level='accessLevels.anon')
                             a.dropdown-toggle(href)
                                 | Account
@@ -36,6 +38,19 @@ html(ng-app='streamApp')
                                 li.divider
                                 li
                                     a(href='#') Why register?
+                        //Menu for user
+                        li(dropdown,access-level='accessLevels.user')
+                            a.dropdown-toggle(href)
+                                span(ng-bind='user.username')
+                                b.caret
+                            ul.dropdown-menu(role="menu")
+                                li(access-level='accessLevels.anon')
+                                    a(ui-sref='anon.login') Profile
+                                li(access-level='accessLevels.anon')
+                                    a(ui-sref='anon.register')
+                                li.divider
+                                li
+                                    a(href='',data-ng-click='logout()') Log out
         .container
             .row
                 block content

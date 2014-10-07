@@ -10,7 +10,7 @@ angular.module('streamApp').
 
         $scope.logout = function () {
             Auth.logout(function () {
-                $location.path('/login');
+                $location.path('/');
             }, function () {
                 $rootScope.error = "Failed to logout";
             });
@@ -25,8 +25,9 @@ angular.module('streamApp').
                     rememberme: $scope.rememberme
                 },
                 function (res) {
-                    $log.log('Successful logged in user, and got response: ' + res);
+                    $log.log('Successful logged in user, and got response: ' + JSON.stringify(res));
                     $location.path('/');
+                    $location.replace();
                 },
                 function (err) {
                     $rootScope.error = err;
@@ -48,7 +49,7 @@ angular.module('streamApp').
                     role: $scope.role
                 },
                 function () {
-                    $state.go('user.home');
+                    $location.path('/');
                 },
                 function (err) {
                     $rootScope.error = err;
