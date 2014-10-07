@@ -17,6 +17,8 @@ var Account = new Schema({
 
 Account.plugin(passportLocalMongoose, {
     usernameField: 'email'
+    // selectFields:'email,role,username'(Not working yet)
+    //TODO select only necessary fields from database, not entire entity
 });
 
 Account.post('remove', function (doc) {

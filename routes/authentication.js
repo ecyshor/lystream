@@ -8,7 +8,13 @@ var passport = require('../util/lib/setup_passport');
 var debug = require('debug')('lystream:authentication');
 
 router.post('/login', passport.authenticate('local'), function (req, res) {
-    res.redirect('/');
+    //TODO send the user with the response
+    debug('Logged in user with details: %s', JSON.stringify(req.user));
+    res.send(200, {
+        'email': req.user.email,
+        'username': req.user.username,
+        'role': req.user.role
+    });
 });
 
 
@@ -22,24 +28,32 @@ router.post('/register', function (req, res) {
         }),
         req.body.password,
         function (err, account) {
-            try {
-                User.validate(req.body);
-            }
-            catch (err) {
-                return res.send(400, err.message);
-            }
+            /*try {
+             User.validate(req.body);
+             }
+             catch (err) {
+             debug('User validation error ' + err );
+             res.send(400, err.message);
+             }*/
             debug('Register outcome: \n Error: ' + JSON.stringify(err) + '\nAccount: ' + JSON.stringify(account));
-            if (err === 'UserAlreadyExists') {
-                debug('Error: user already exists in database with email %s', account.email);
-                return res.send(403, "User already exists");
+            if (err) {
+                debug('Error: user already exists in database.');
+                res.send(400, "User already exists");
             }
-            else if (err) {
-                debug('Error registering new user from request: ' + req + ' with error message: ' + err);
-                res.send(500);
-            }
-            res.redirect('/');
+            passport.authenticate('local')(req, res, function () {
+                res.json(200, {
+                    'email': account.email,
+                    'username': account.username,
+                    'role': account.role
+                });
+                res.end();
+            });
         });
-    res.end();
+});
+
+router.post('/logout', function (req, res) {
+    req.logout();
+    res.send(200);
 });
 module.exports = router;
 

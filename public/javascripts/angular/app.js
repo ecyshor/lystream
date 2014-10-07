@@ -35,7 +35,8 @@ angular.module('streamApp', [
         })
         .state('anon.login', {
             url: '/login/',
-            templateUrl: '/partials/auth/login'
+            templateUrl: '/partials/auth/login',
+            controller: 'LoginCtrl'
             /*onEnter: function ($stateParams, $state, $modal, $resource, $log) {
              $log.log($state);
              $modal.open({

@@ -16,26 +16,27 @@ angular.module('streamApp').
             });
         };
     }).
-    controller('LoginCtrl', function ($rootScope, $scope, $location, $window, Auth) {
+    controller('LoginCtrl', function ($log, $rootScope, $scope, $location, $window, Auth) {
         $scope.rememberme = true;
         $scope.login = function () {
             Auth.login({
-                    username: $scope.username,
+                    email: $scope.email,
                     password: $scope.password,
                     rememberme: $scope.rememberme
                 },
                 function (res) {
+                    $log.log('Successful logged in user, and got response: ' + res);
                     $location.path('/');
                 },
                 function (err) {
-                    $rootScope.error = "Failed to login";
+                    $rootScope.error = err;
                 });
         };
         $scope.loginOauth = function (provider) {
             $window.location.href = '/auth/' + provider;
         };
     }).
-    controller('RegisterCtrl', function ($rootScope, $scope, $location, Auth) {
+    controller('RegisterCtrl', function ($state, $rootScope, $scope, $location, Auth) {
         $scope.role = Auth.userRoles.user;
         $scope.userRoles = Auth.userRoles;
 
@@ -47,7 +48,7 @@ angular.module('streamApp').
                     role: $scope.role
                 },
                 function () {
-                    $location.path('/');
+                    $state.go('user.home');
                 },
                 function (err) {
                     $rootScope.error = err;

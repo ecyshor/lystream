@@ -36,6 +36,7 @@ angular.module('streamApp').
             register: function (user, success, error) {
                 $log.log('Registering user with details: ' + JSON.stringify(user));
                 $http.post('/auth/register', user).success(function (res) {
+                    $log.log('Registering successful for user. Recieved response ' + JSON.stringify(res));
                     changeUser(res);
                     success();
                 }).error(error);
