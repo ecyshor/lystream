@@ -18,6 +18,9 @@ angular.module('streamApp', [
             data: {
                 access: access.public
             }
+        }).state('public.home', {
+            url: '/',
+            templateUrl: '/home'
         })
         .state('public.404', {
             url: '/404/',
@@ -42,17 +45,14 @@ angular.module('streamApp', [
              $modal.open({
              templateUrl: "auth/login",
              controller: 'LoginCtrl'
-                }).result.then(function (result) {
-                        if (result) {
+             }).result.then(function (result) {
+             if (result) {
              return $state.go('user.home');
              } else {
              return $state.go('^');
              }
-                    });
+             });
              }*/
-        }) .state('anon.home', {
-            url: '/',
-            templateUrl: '/home'
         })
         .state('anon.register', {
             url: '/register/',
@@ -62,15 +62,15 @@ angular.module('streamApp', [
              $modal.open({
              templateUrl: "auth/register",
              resolve: {
-                        item: function () {
-                        }
-                    },
-                    controller: 'RegisterCtrl'
-                }).result.then(function (result) {
-                        if (result) {
+             item: function () {
+             }
+             },
+             controller: 'RegisterCtrl'
+             }).result.then(function (result) {
+             if (result) {
              return $state.go('user.home');
              }
-                    });
+             });
              }*/
         });
 
@@ -165,18 +165,22 @@ angular.module('streamApp', [
     });
 
 }])
-    .run(['$rootScope', '$state', 'Auth', function ($rootScope, $state, Auth) {
+    .run(['$log', '$rootScope', '$state', 'Auth', function ($log, $rootScope, $state, Auth) {
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
-            if (!Auth.authorize(toState.data.access)) {
-                $rootScope.error = "Seems like you tried accessing a route you don't have access to...";
+            if(!('data' in toState) || !('access' in toState.data)){
+                $rootScope.error = "Access undefined for this state";
                 event.preventDefault();
-
+            }
+            $log.log('State change started from ' + JSON.stringify(fromState) + ' to ' + JSON.stringify(toState));
+            if (!Auth.authorize(toState.data.access)) {
+                event.preventDefault();
                 if (fromState.url === '^') {
                     if (Auth.isLoggedIn()) {
-                     $state.go('user.home');
+                        $rootScope.error = "Seems like you tried accessing a route you don't have access to...";
+                        $state.go('public.home');
                     } else {
-                        $rootScope.error = null;
-                     $state.go('anon.home');
+                        $rootScope.error = "Seems like you tried accessing a route you don't have access to...";
+                        $state.go('anon.login');
                     }
                 }
             }

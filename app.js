@@ -5,10 +5,11 @@ var express = require('express')
     , cookieParser = require('cookie-parser')
     , bodyParser = require('body-parser')
     , session = require('express-session')
-    , passport = require('./util/lib/setup_passport')
+    , passport = require('passport')
     , csrf = require('csurf')
     , methodOverride = require('method-override')
-    , log = require('debug')('lystream:server');
+    , log = require('debug')('lystream:server')
+    , User = require('./util/models/account');
 
 var app = module.exports = express();
 
@@ -19,15 +20,16 @@ app.set('view engine', 'jade');
 
 app.use(favicon());
 app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
 app.use(methodOverride());
 app.use(cookieParser());
 app.use(session({
     secret: 'keyboard cat',
     saveUninitialized: true,
-    resave: true}));
-
+    resave: true
+}));
+app.use(express.static(path.join(__dirname, 'public')));
 var env = process.env.NODE_ENV || 'development';
 if ('development' === env || 'production' === env) {
     app.use(csrf());
@@ -39,22 +41,15 @@ if ('development' === env || 'production' === env) {
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// CHANGE: USE "createStrategy" INSTEAD OF "authenticate"
+passport.use(User.createStrategy());
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 //Routes
 
-app.use('/home', require('./routes/index'));
-app.use('/stream', require('./routes/receive_stream_ffmpeg'));
-app.use('/auth', require('./routes/authentication'));
-app.route('/partials/*')
-    .get(function (req, res) {
-        var requestedView = path.join('./', req.url);
-        res.render(requestedView);
-    });
-app.route('/*')
-    .get(function (req, res) {
-        log('Rendering index');
-        res.render('index');
-    });
+require('./routes/routes')(app);
 
 ///// catch 404 and forward to error handler
 app.use(function (req, res, next) {

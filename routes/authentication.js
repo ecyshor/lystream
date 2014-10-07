@@ -4,7 +4,7 @@
 var express = require('express');
 var router = express.Router();
 var Account = require('../util/models/account');
-var passport = require('../util/lib/setup_passport');
+var passport = require('passport');
 var debug = require('debug')('lystream:authentication');
 
 router.post('/login', passport.authenticate('local'), function (req, res) {

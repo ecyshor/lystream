@@ -8,11 +8,10 @@
 angular.module('streamApp').
     factory(
     'Auth', function ($http, $cookieStore, $log) {
-        $log.log('Entering Auth service');
         var accessLevels = routingConfig.accessLevels
             , userRoles = routingConfig.userRoles
             , currentUser = $cookieStore.get('user') || { username: '', role: userRoles.public };
-
+        $log.log('Auth service user: ' + JSON.stringify(currentUser));
         $cookieStore.remove('user');
 
         function changeUser(user) {
@@ -24,7 +23,8 @@ angular.module('streamApp').
                 if (role === undefined) {
                     role = currentUser.role;
                 }
-
+                $log.log('Authorizing access for accessLevel ' +
+                    JSON.stringify(accessLevel) + ' for role ' + JSON.stringify(role));
                 return accessLevel.bitMask & role.bitMask;
             },
             isLoggedIn: function (user) {
@@ -48,7 +48,7 @@ angular.module('streamApp').
                 }).error(error);
             },
             logout: function (success, error) {
-                $http.post('/logout').success(function () {
+                $http.post('/auth/logout').success(function () {
                     changeUser({
                         username: '',
                         role: userRoles.public

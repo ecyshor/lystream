@@ -26,7 +26,7 @@
     "angular-cookies": "~1.2.18",
     "angular-bootstrap": "~0.11.0",
     "restangular": "~1.4.0",
-    "bootswatch": "~3.2.0+4"
+    "bootswatch": "^3.2.0"
   },
   "resolutions": {
     "angular": "~1.2.18",

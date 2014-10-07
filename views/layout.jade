@@ -18,8 +18,7 @@ html(ng-app='streamApp')
                 .navbar-collapse.collapse.navbar-responsive-collapse
                     ul.nav.navbar-nav
                         li.active(access-level='accessLevels.public',active-nav,ui-sref-active='active')
-                            a(ui-sref='anon.home', access-level='accessLevels.anon') Home
-                            a(ui-sref='user.home', access-level='accessLevels.user') Home
+                            a(ui-sref='public.home', access-level='accessLevels.public') Home
                         li(access-level='accessLevels.public')
                             a(ui-sref='public.browse') Browse
                     form.navbar-form.navbar-left
