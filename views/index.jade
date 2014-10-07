@@ -2,3 +2,7 @@ extends layout
 
 block content
     .container(ui-view)
+    #alertBox.alert.alert-danger(data-ng-show="error")
+        button(type="button", class="close", data-ng-click="error = null;") &times;
+        strong Oh no!&nbsp;
+        span(data-ng-bind="error")
