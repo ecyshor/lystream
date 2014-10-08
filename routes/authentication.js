@@ -6,7 +6,7 @@ var router = express.Router();
 var Account = require('../util/models/account');
 var passport = require('passport');
 var debug = require('debug')('lystream:authentication');
-
+//TODO server side validation
 router.post('/login', passport.authenticate('local'), function (req, res) {
     //TODO send the user with the response
     debug('Logged in user with details: %s', JSON.stringify(req.user));

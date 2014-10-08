@@ -31,6 +31,7 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 var env = process.env.NODE_ENV || 'development';
+app.set('env',env);
 if ('development' === env || 'production' === env) {
     app.use(csrf());
     app.use(function (req, res, next) {
@@ -65,7 +66,7 @@ app.use(function (req, res, next) {
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.status);
-        log('Error : ' + err.message + '\n' + err);
+        log('Error : ' + err.message + '\n' + err.stack);
         res.render('error', {
             message: err.message,
             error: err
