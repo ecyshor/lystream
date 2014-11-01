@@ -13,7 +13,6 @@ angular.module('streamApp').
             , currentUser = $cookieStore.get('user') || { username: '', role: userRoles.public };
         $log.log('Auth service user: ' + JSON.stringify(currentUser));
         $cookieStore.remove('user');
-
         function changeUser(user) {
             angular.extend(currentUser, user);
         }
@@ -23,8 +22,6 @@ angular.module('streamApp').
                 if (role === undefined) {
                     role = currentUser.role;
                 }
-                $log.log('Authorizing access for accessLevel ' +
-                    JSON.stringify(accessLevel) + ' for role ' + JSON.stringify(role));
                 return accessLevel.bitMask & role.bitMask;
             },
             isLoggedIn: function (user) {
@@ -53,6 +50,7 @@ angular.module('streamApp').
                         username: '',
                         role: userRoles.public
                     });
+
                     success();
                 }).error(error);
             },
@@ -60,11 +58,23 @@ angular.module('streamApp').
             userRoles: userRoles,
             user: currentUser
         };
-    }
-).factory('Users', function ($http) {
+    }).factory('Users', function ($http) {
         return {
             getAll: function (success, error) {
-                $http.get('/users').success(success).error(error);
+            }
+        };
+    }).factory('User', function ($http, $log) {
+        return {
+            getStreams: function (success, error) {
+                $log.info('Fetching streams for user');
+                $http.get('/streams').success(success).error(error);
+            },
+            addStream: function (stream, success, error) {
+                $log.log('Sending request for new stream with information ' + JSON.stringify(stream));
+                $http.post('/streams', {'stream': stream}).success(function (res) {
+                    $log.log('Created user stream :' + JSON.stringify(res));
+                    success(res);
+                }).error(error);
             }
         };
     });

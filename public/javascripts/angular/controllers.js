@@ -68,4 +68,25 @@ angular.module('streamApp').
             $scope.loading = false;
         });
 
+    }).
+    controller('StreamCtrl', function ($rootScope, $scope, User, $log) {
+        $scope.streams = [];
+        $scope.isCollapsed = true;
+        $scope.createStream = function () {
+            User.addStream($scope.stream, function (res) {
+                $scope.streams.push(res);
+                $scope.isCollapsed = false;
+            }, function (err) {
+                $rootScope.error = err;
+            });
+        };
+        User.getStreams(function (streams) {
+            $log.info('Succesfully fetched user streams.')
+
+
+            $scope.streams = streams;
+        }, function (err) {
+            $log.error('Error fetching user streams' + err);
+            $rootScope.error = err;
+        });
     });

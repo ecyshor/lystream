@@ -1,0 +1,55 @@
+<!--Created by Nicu on 23/10/2014.-->
+<div class="row">
+    <div class="col-md-9"><h5> Your streams</h5></div>
+    <div class="col-md-3">
+        <button ng-click="isCollapsed = !isCollapsed" class="btn btn-success pull-right"><span
+                class="glyphicon glyphicon-plus-sign"></span></button>
+    </div>
+    <hr/>
+</div>
+<div class="row">
+    <div collapse="isCollapsed" class="col-md-12">
+        <div class="well well-lg">
+            <form name="streamForm">
+                <div ng-class="streamForm.name.$invalid ? streamForm.name.$pristine?'has-warning':'has-error' : 'has-success' "
+                     class="form-group"><label for="streamName">Stream name</label><input id="streamName" type="text"
+                                                                                          data-ng-model="stream.name"
+                                                                                          ng-required="true"
+                                                                                          ng-minlength="10" name="name"
+                                                                                          class="form-control"/><label
+                        for="streamDescription">Stream description</label><input id="streamDescription" type="text"
+                                                                                 data-ng-model="stream.description"
+                                                                                 ng-minlength="20" name="description"
+                                                                                 class="form-control"/>
+                    <button ng-click="createStream()" ng-disabled="streamForm.$invalid"
+                            class="btn btn-success pull-right"><span class="glyphicon glyphicon-ok"></span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Your streams</div>
+            <div class="panel-body"><p>This are all your current streams, you can upload to any of them, please do not
+                share your secret
+                key for the stream, because with it anyone can stream to your stream.</p></div>
+            <!-- Table-->
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Secret (do not share this with anyone)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr data-ng-repeat="stream in streams">
+                    <td>{{stream.name}}</td>
+                    <td>{{stream.description}}</td>
+                    <td>{{stream.uploadSecretPassKey}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

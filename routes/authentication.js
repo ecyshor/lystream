@@ -8,7 +8,6 @@ var passport = require('passport');
 var debug = require('debug')('lystream:authentication');
 //TODO server side validation
 router.post('/login', passport.authenticate('local'), function (req, res) {
-    //TODO send the user with the response
     debug('Logged in user with details: %s', JSON.stringify(req.user));
     res.send(200, {
         'email': req.user.email,
@@ -29,13 +28,6 @@ router.post('/register', function (req, res) {
         }),
         req.body.password,
         function (err, account) {
-            /*try {
-             User.validate(req.body);
-             }
-             catch (err) {
-             debug('User validation error ' + err );
-             res.send(400, err.message);
-             }*/
             debug('Register outcome: \n Error: ' + JSON.stringify(err) + '\nAccount: ' + JSON.stringify(account));
             if (err) {
                 debug('Error: user already exists in database.');

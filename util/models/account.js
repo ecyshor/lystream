@@ -12,7 +12,10 @@ var Account = new Schema({
     role: {
         bitMask: String,
         title: String
-    }
+    },
+    streams: [
+        { type: Schema.Types.ObjectId, ref: 'Stream' }
+    ]
 });
 
 Account.plugin(passportLocalMongoose, {
@@ -21,9 +24,9 @@ Account.plugin(passportLocalMongoose, {
     //TODO select only necessary fields from database, not entire entity
 });
 
-Account.post('remove', function (doc) {
+Account.pre('remove', function (doc) {
     debug('Removing user with id ' + doc._id + ' and user streams.');
-    streamModel.remove({user_id: doc._id});
+    streamModel.remove({_creator: doc._id});
 });
 
 module.exports = mongoose.model('Account', Account);

@@ -1,8 +1,79 @@
-extends layout
+doctype html
+html(ng-app='streamApp')
+    head
+        title= title
+        link(rel='stylesheet', href='/components/bootswatch/cyborg/bootstrap.min.css')
+        link(rel='stylesheet', href='/components/angular/angular-csp.css')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+    body(ng-cloak)
+        div.navbar.navbar-default.navbar-fixed-top(role='navigation',ng-controller='NavCtrl')
+            .container
+                .navbar-header
+                    button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-responsive-collapse')
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    a.navbar-brand(ui-sref='public.home') lystream
+                .navbar-collapse.collapse.navbar-responsive-collapse
+                    ul.nav.navbar-nav
+                        li.active(access-level='accessLevels.public',active-nav,ui-sref-active='active')
+                            a(ui-sref='public.home', access-level='accessLevels.public') Home
+                        li(access-level='accessLevels.public')
+                            a(ui-sref='public.browse') Browse
+                    form.navbar-form.navbar-left
+                        input.form-control.col-lg-8(type='text', placeholder='Search')
 
-block content
-    .container(ui-view)
-    #alertBox.alert.alert-danger(data-ng-show="error")
-        button(type="button", class="close", data-ng-click="error = null;") &times;
-        strong Oh no!&nbsp;
-        span(data-ng-bind="error")
+                    ul.nav.navbar-nav.navbar-right
+                        //Menu for anon user
+                        li(dropdown,access-level='accessLevels.anon')
+                            a.dropdown-toggle(href)
+                                | Account
+                                b.caret
+                            ul.dropdown-menu(role="menu")
+                                li(access-level='accessLevels.anon')
+                                    a(ui-sref='anon.login') Login
+                                li(access-level='accessLevels.anon')
+                                    a(ui-sref='anon.register') Register
+                                li.divider
+                                li
+                                    a(href='#') Why register?
+                        //Menu for user
+                        li(dropdown,access-level='accessLevels.user')
+                            a.dropdown-toggle(href)
+                                span(ng-bind='user.username')
+                                b.caret
+                            ul.dropdown-menu(role="menu")
+                                li
+                                    a(ui-sref='user.private.streams', href='') Profile
+                                li.divider
+                                li
+                                    a(href='',data-ng-click='logout()') Log out
+        .container
+            .row
+                ui-view
+                .col-lg-12
+                    #alertBox.alert.alert-danger(data-ng-show="error")
+                        button(type="button", class="close", data-ng-click="error = null;") &times;
+                        strong Oh no!&nbsp;
+                        span(data-ng-bind="error")
+        .footer
+            .container
+                .row
+                    .col-lg-12
+                        p.muted-credit Reut Nicu
+        script(type="text/javascript",src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js")
+        script(src='/components/jquery/dist/jquery.min.js')
+        script(src='/components/bootstrap/dist/js/bootstrap.min.js')
+        script(src='/javascripts/dash/dash.all.js')
+        script(src='/components/angular/angular.min.js')
+        script(src='/components/angular-ui-router/release/angular-ui-router.min.js')
+        script(src='/components/angular-cookies/angular-cookies.min.js')
+        script(src='/components/restangular/src/restangular.js')
+        script(src='/components/angular-bootstrap/ui-bootstrap-tpls.min.js')
+        script(src='/javascripts/angular/app.js')
+        script(src='/javascripts/angular/services.js')
+        script(src='/javascripts/angular/controllers.js')
+        script(src='/javascripts/angular/directives.js')
+        script(src='/javascripts/angular/filters.js')
+        script(src='/javascripts/angular/routingConfig.js')
+        script(src='/javascripts/script.js')

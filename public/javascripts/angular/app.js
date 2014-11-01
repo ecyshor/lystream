@@ -75,6 +75,7 @@ angular.module('streamApp', [
         });
 
     // Regular user routes
+    //TODO define states for user, streams, profile, stream configuration and so on
     $stateProvider
         .state('user', {
             abstract: true,
@@ -86,23 +87,14 @@ angular.module('streamApp', [
         .state('user.private', {
             abstract: true,
             url: '/private/',
-            templateUrl: 'private/layout'
+            templateUrl: '/partials/private/layout'
+
         })
-        .state('user.private.home', {
+        .state('user.private.streams', {
             url: '',
-            templateUrl: 'private/home'
+            templateUrl: '/partials/private/streams',
+            controller: 'StreamCtrl'
         })
-        .state('user.private.nested', {
-            url: 'nested/',
-            templateUrl: 'private/nested'
-        })
-        .state('user.private.admin', {
-            url: 'admin/',
-            templateUrl: 'private/nestedAdmin',
-            data: {
-                access: access.admin
-            }
-        });
 
     // Admin routes
     $stateProvider
@@ -112,11 +104,6 @@ angular.module('streamApp', [
             data: {
                 access: access.admin
             }
-        })
-        .state('admin.admin', {
-            url: '/admin/',
-            templateUrl: 'admin',
-            controller: 'AdminCtrl'
         });
 
 
@@ -167,7 +154,7 @@ angular.module('streamApp', [
 }])
     .run(['$log', '$rootScope', '$state', 'Auth', function ($log, $rootScope, $state, Auth) {
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
-            if(!('data' in toState) || !('access' in toState.data)){
+            if (!('data' in toState) || !('access' in toState.data)) {
                 $rootScope.error = "Access undefined for this state";
                 event.preventDefault();
             }

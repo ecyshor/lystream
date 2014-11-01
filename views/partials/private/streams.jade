@@ -1,0 +1,39 @@
+//
+   Created by Nicu on 23/10/2014.
+.row
+    .col-md-9
+        h5  Your streams
+    .col-md-3
+        button.btn.btn-success.pull-right(ng-click='isCollapsed = !isCollapsed')
+            span.glyphicon.glyphicon-plus-sign
+    hr
+.row
+    .col-md-12(collapse='isCollapsed')
+        .well.well-lg
+            form(name="streamForm")
+                div.form-group(ng-class="streamForm.name.$invalid ? streamForm.name.$pristine?'has-warning':'has-error' : 'has-success' ")
+                    label(for="streamName") Stream name
+                    input.form-control#streamName(type="text",data-ng-model="stream.name", ng-required="true", ng-minlength=10, name = "name")
+                    label(for="streamDescription") Stream description
+                    input.form-control#streamDescription(type="text",data-ng-model="stream.description",  ng-minlength=20, name = "description")
+                    button.btn.btn-success.pull-right(ng-click='createStream()',ng-disabled="streamForm.$invalid")
+                        span.glyphicon.glyphicon-ok
+    .col-md-12
+        div.panel.panel-default
+            div.panel-heading Your streams
+            div.panel-body
+                p
+                    | This are all your current streams, you can upload to any of them, please do not share your secret
+                    | key for the stream, because with it anyone can stream to your stream.
+            // Table
+            table.table
+                thead
+                    tr
+                        th Name
+                        th Description
+                        th Secret (do not share this with anyone)
+                tbody
+                    tr(data-ng-repeat='stream in streams')
+                        td {{stream.name}}
+                        td {{stream.description}}
+                        td {{stream.uploadSecretPassKey}}

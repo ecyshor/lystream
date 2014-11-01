@@ -1,16 +1,23 @@
 /**
  * Created by nreut on 26-Jun-14.
  */
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
-
+var log = require('debug')('lystream:streamModel'),
+    mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    crypto = require('crypto');
 var Stream = new Schema({
-    name: {
-        type: String,
-        match: /^[a-zA-z0-9]{5,50} /
-    },
+    name: String,
     description: String,
-    user_id: mongoose.Schema.Types.ObjectId
+    uploadSecretPassKey: String,
+    _creator: { type: String, ref: 'Account' }
 });
 
+Stream.pre('save', function (next) {
+    this.uploadSecretPassKey = crypto.randomBytes(20).toString('hex');
+    log('Generated secret key for stream ' + this._id + ' : ' + this.uploadSecretPassKey);
+    next();
+});
+Stream.post('save', function (doc) {
+    log('Saved document: ' + JSON.stringify(doc));
+});
 module.exports = mongoose.model('Stream', Stream);
