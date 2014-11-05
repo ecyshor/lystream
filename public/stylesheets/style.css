@@ -73,3 +73,6 @@ video {
 
 /*-------------------------------------*/
 
+.my-responsive-table {
+    word-wrap: break-word;
+}

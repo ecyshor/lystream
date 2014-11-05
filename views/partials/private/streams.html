@@ -34,11 +34,12 @@
                 share your secret
                 key for the stream, because with it anyone can stream to your stream.</p></div>
             <!-- Table-->
-            <table class="table">
+            <table class="my-responsive-table table">
                 <thead>
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
+                    <th>Id</th>
                     <th>Secret (do not share this with anyone)</th>
                 </tr>
                 </thead>
@@ -46,6 +47,7 @@
                 <tr data-ng-repeat="stream in streams">
                     <td>{{stream.name}}</td>
                     <td>{{stream.description}}</td>
+                    <td>{{stream._id}}</td>
                     <td>{{stream.uploadSecretPassKey}}</td>
                 </tr>
                 </tbody>

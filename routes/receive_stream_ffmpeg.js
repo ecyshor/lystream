@@ -3,10 +3,7 @@
  */
 var express = require('express');
 var router = express.Router();
-var HashMap = require('hashmap').HashMap;
 
-var VideoBuffer = require('../util/VideoBuffer');
-var streamMap = new HashMap;
 router.get('/:id/mpd', function (req, res) {
     if (streamMap.has(req.param('id'))) {
         res.set({'Content-Type': 'application/xml'});
@@ -63,7 +60,7 @@ router.get('/:id/:segmentNo', function (req, res) {
                 'Content-Type': 'video/webm',
                 'Accept-Ranges': 'bytes',
                 'Transfer-Encoding': 'chunked',
-                'Content-Length': bufferStream.getSegmentData(req.param('segmentNo')).length,
+                'Content-Length': bufferStream.getSegmentData(req.param('segmentNo')).length
             });
         console.log('Client: Getting stream and piping for stream with id ' + req.param('id'));
         res.write(bufferStream.getSegmentData(req.param('segmentNo')), 'binary');

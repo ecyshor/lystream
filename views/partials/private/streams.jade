@@ -26,14 +26,16 @@
                     | This are all your current streams, you can upload to any of them, please do not share your secret
                     | key for the stream, because with it anyone can stream to your stream.
             // Table
-            table.table
+            table.my-responsive-table.table
                 thead
                     tr
                         th Name
                         th Description
+                        th Id
                         th Secret (do not share this with anyone)
                 tbody
                     tr(data-ng-repeat='stream in streams')
                         td {{stream.name}}
                         td {{stream.description}}
+                        td {{stream._id}}
                         td {{stream.uploadSecretPassKey}}

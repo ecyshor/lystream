@@ -12,14 +12,9 @@ var path = require('path')
  * */
 var routes = [
     {
-        path: '/streams/',
+        path: /^\/?streams\/?$/i,
         accessLevel: accessLevels.user,
-        requestMethod: 'POST'
-    },
-    {
-        path: '/streams/',
-        accessLevel: accessLevels.user,
-        requestMethod: 'GET'
+        requestMethod: 'POST,GET'
     }
 ];
 /*
@@ -73,8 +68,8 @@ function ensureAuthorized(req, res, next) {
     try {
         log('Finding route access level for route with original url ' + req.originalUrl);
         var route = _.find(routes, function (route) {
-                var routePath = (req.originalUrl + '/').indexOf(route.path) === 0;
-                var requestMethod = route.requestMethod === req.method.toUpperCase();
+                var routePath = route.path.test(req.originalUrl);
+                var requestMethod = route.requestMethod.indexOf(req.method.toUpperCase()) > -1;
                 return routePath && requestMethod;
             }
         );

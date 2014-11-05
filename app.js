@@ -5,6 +5,7 @@ var express = require('express')
     , cookieParser = require('cookie-parser')
     , bodyParser = require('body-parser')
     , session = require('express-session')
+    , MongoStore = require('connect-mongo')(session)
     , passport = require('passport')
     , csrf = require('csurf')
     , methodOverride = require('method-override')
@@ -27,7 +28,14 @@ app.use(cookieParser());
 app.use(session({
     secret: 'keyboard cat',
     saveUninitialized: true,
-    resave: true
+    resave: true,
+    store: new MongoStore({
+        url: 'mongodb://localhost/test'
+    }, function (err) {
+        if (err)
+            log(err + 'Error connecting to session database');
+        log('connect-mongodb setup ok');
+    })
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 var env = process.env.NODE_ENV || 'development';
@@ -39,11 +47,9 @@ if ('development' === env || 'production' === env) {
         next();
     });
 }
-
 app.use(passport.initialize());
 app.use(passport.session());
 
-// CHANGE: USE "createStrategy" INSTEAD OF "authenticate"
 passport.use(User.createStrategy());
 
 passport.serializeUser(User.serializeUser());
