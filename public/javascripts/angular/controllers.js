@@ -75,7 +75,7 @@ angular.module('streamApp').
         $scope.createStream = function () {
             User.addStream($scope.stream, function (res) {
                 $scope.streams.push(res);
-                $scope.isCollapsed = false;
+                $scope.isCollapsed = true;
             }, function (err) {
                 $rootScope.error = err;
             });

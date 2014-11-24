@@ -23,7 +23,6 @@ var routes = [
 router.use(ensureAuthorized);
 router.use('/home', require('./index'));
 router.use('/auth', require('./authentication'));
-router.use('/stream', require('./receive_stream_ffmpeg'));
 router.use('/streams', require('./streams'));
 module.exports = function (app) {
     app.use(router);
@@ -76,7 +75,7 @@ function ensureAuthorized(req, res, next) {
         accessLevel = route.accessLevel;
         log('Found access level  ' + accessLevel + ' for route, checking user role.');
     } catch (err) {
-        log('Error in getting access level for route, access level set to default public' + err);
+        log('Error in getting access level for route, access level set to default public due to error: ' + err);
         accessLevel = accessLevels.public;
     }
     if (!(accessLevel.bitMask & role.bitMask))

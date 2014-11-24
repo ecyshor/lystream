@@ -293,8 +293,4 @@ C:\Users\nreut>bower
 'bower' is not recognized as an internal or external command,
 operable program or batch file.
 
-C:\Users\nreut>ffmpeg -rtbufsize 1500M -f dshow -r 10 -i video="UScreenCapture"
--flags +global_header -vcodec libvpx -deadline realtime -profile:v 0 -keyint_min
- 1 -g 1 -cpu-used 0 -vb 1500k -qmin 10 -qmax 42  -threads 4 -vf scale=-1:720 -bu
-fsize 1500 -slices 4 -map 0 -an -f stream_segment -segment_time 2 -segment_forma
-t webm -reset_timestamps 0 http://localhost:3000/stream/22/%03d
+C:\Users\nreut>ffmpeg -rtbufsize 1500M -f dshow -r 10 -i video="UScreenCapture" -flags +global_header -vcodec libvpx -deadline realtime -profile:v 0 -keyint_min 1 -g 1 -cpu-used 0 -vb 1500k -qmin 10 -qmax 42  -threads 4 -vf scale=-1:720 -bufsize 1500 -slices 4 -map 0 -an -f stream_segment -segment_time 2 -segment_format webm -reset_timestamps 0 http://localhost:3000/stream/ae3e34bd4a8ac2052d4ad014ac24fc29fdd9f87c/%03d

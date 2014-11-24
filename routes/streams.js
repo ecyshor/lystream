@@ -6,9 +6,9 @@ var router = require('express').Router(),
     Account = require('../util/models/account'),
     log = require('debug')('lystream:streamApi'),
     HashMap = require('hashmap').HashMap,
-    VideoBuffer = require('../util/VideoBuffer'),
-    streamMap = new HashMap;
+    VideoBuffer = require('../util/VideoBuffer');
 
+var streamMap = new HashMap;
 const streamId = 'streamId';
 /*Return the user's streams*/
 router.get('/', function (req, res) {
@@ -52,24 +52,26 @@ router.post('/', function (req, res) {
 
 
 /*Upload*/
-router.post('/:{streamId}/:{secret}', function (req, res) {
-    Stream
-        .count({ uploadSecretPassKey: req.param('secret'),
-            _id: req.param(streamId) }, function (err, count) {
+router.post('/:streamSecretId/*', function (req, res) {
+    var query = Stream.where({ uploadSecretPassKey: req.param('streamSecretId') });
+    query.findOne(function (err, stream) {
             if (err) {
                 log('Error retrieving stream for upload');
                 res.json(500, err);
                 res.end();
+                return;
             }
-            if (count == 1) {
+            if (stream !== null) {
                 log('Retrieved user stream with secret and id ');
-                log('Source: Starting stream ' + req.param(streamId));
+                log('Source: Starting stream ' + stream._id);
                 var vidBuf;
-                if (!streamMap.has(req.param(streamId))) {
-                    vidBuf = new VideoBuffer(req.param(streamId));
-                    streamMap.set(req.param(streamId), vidBuf);
+                if (!streamMap.has(stream._id)) {
+                    log('The stream is new, creating video buffer.')
+                    vidBuf = new VideoBuffer(stream._id);
+                    streamMap.set(stream._id, vidBuf);
                 } else {
-                    vidBuf = streamMap.get(req.param(streamId));
+                    log('Video buffer already exists');
+                    vidBuf = streamMap.get(stream._id);
                 }
                 var segmentLength = 0;
                 req.on('data', function (data) {
@@ -77,18 +79,19 @@ router.post('/:{streamId}/:{secret}', function (req, res) {
                     vidBuf.append(data);
                 });
                 req.on('end', function () {
-                    log('Terminating segment for stream with id: ' + req.param(streamId));
+                    log('Terminating segment for stream with id: ' + stream._id);
                     vidBuf.updateMPD(segmentLength);
                     res.end();
                 });
             } else {
-                res.json(403, {error: 'Incorrect stream id/secret'});
+                log('No stream found for secret' + req.param('streamSecretId'));
+                res.json(404, {error: 'Incorrect stream id/secret'});
                 res.end();
             }
         });
 });
 /*Deliver mpd for stream*/
-router.get('/:{streamId}/mpd', function (req, res) {
+router.get('/:streamId/mpd', function (req, res) {
     if (streamMap.has(req.param(streamId))) {
         res.set({'Content-Type': 'application/xml'});
         res.write(streamMap.get(req.param(streamId)).getMPD());
@@ -100,7 +103,7 @@ router.get('/:{streamId}/mpd', function (req, res) {
     }
 });
 /*Head for segment*/
-router.head('/:{streamId}/:{segmentNo}', function (req, res) {
+router.head('/:streamId/:segmentNo', function (req, res) {
     log('Head: Requesting segment number ' + req.param('segmentNo') + ' for stream with id ' + req.param(streamId));
     log('\tHead: Segment from stream with length ' + streamMap.get(req.param(streamId)).getSegmentData(req.param('segmentNo')).length);
     res.set({
@@ -113,7 +116,7 @@ router.head('/:{streamId}/:{segmentNo}', function (req, res) {
     res.end();
 });
 /*Deliver segment*/
-router.get('/:{streamId}/:{segmentNo}', function (req, res) {
+router.get('/:streamId/:segmentNo', function (req, res) {
     log('Getting segment ' + req.param('segmentNo') + ' for stream ' + req.param(streamId));
     if (streamMap.has(req.param(streamId))) {
         var bufferStream = streamMap.get(req.param(streamId));
@@ -136,7 +139,7 @@ router.get('/:{streamId}/:{segmentNo}', function (req, res) {
     }
 });
 /*Deliver init segment*/
-router.get('/:{streamId}', function (req, res) {
+router.get('/:streamId', function (req, res) {
     res.set({
         'Connection': 'keep-alive',
         'Content-Type': 'video/webm',
@@ -145,7 +148,7 @@ router.get('/:{streamId}', function (req, res) {
         'Content-Length': '432',
         'Content-Range': '0-431/432'
     });
-    res.write(streamMap.get(req.param(streamId)).bufferList.slice(0, 432));
+    res.write(streamMap.get(req.param(streamId)).getInitSegment());
     res.end();
 });
 

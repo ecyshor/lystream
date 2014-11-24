@@ -39,14 +39,16 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 var env = process.env.NODE_ENV || 'development';
+
+
 app.set('env',env);
-if ('development' === env || 'production' === env) {
+/*if ('development' === env || 'production' === env) {
     app.use(csrf());
     app.use(function (req, res, next) {
         res.cookie('XSRF-TOKEN', req.csrfToken());
         next();
     });
-}
+}*/
 app.use(passport.initialize());
 app.use(passport.session());
 

@@ -19,9 +19,10 @@ var Account = new Schema({
 });
 
 Account.plugin(passportLocalMongoose, {
-    usernameField: 'email'
-    // selectFields:'email,role,username'(Not working yet)
-    //TODO select only necessary fields from database, not entire entity
+    usernameField: 'email',
+   // selectFields:'email role username' Working, decide whether to use
+    usernameLowerCase : true,
+    populateFields: 'streams'
 });
 
 Account.pre('remove', function (doc) {

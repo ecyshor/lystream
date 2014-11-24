@@ -131,6 +131,10 @@ var VideoBuffer = (function () {
         return this.mpd.toString();
     };
 
+    VideoBuffer.prototype.getInitSegment = function(){
+        return this.bufferList.slice(0, 432);
+    }
+
     return VideoBuffer;
 })();
 
