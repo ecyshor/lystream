@@ -32,9 +32,11 @@ app.use(session({
     store: new MongoStore({
         url: 'mongodb://localhost/test'
     }, function (err) {
-        if (err)
-            log(err + 'Error connecting to session database');
+        if (err instanceof Error) {
+            log(err.toString() + ' Error connecting to session database');
+        }else{
         log('connect-mongodb setup ok');
+        }
     })
 }));
 app.use(express.static(path.join(__dirname, 'public')));

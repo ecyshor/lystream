@@ -25,6 +25,11 @@ angular.module('streamApp', [
         .state('public.404', {
             url: '/404/',
             templateUrl: '404'
+        })
+        .state('public.stream',{
+            url:'/stream/:streamId',
+            templateUrl:'/partials/stream',
+            controller:'StreamingCtrl'
         });
 
     // Anonymous routes
@@ -40,42 +45,14 @@ angular.module('streamApp', [
             url: '/login/',
             templateUrl: '/partials/auth/login',
             controller: 'LoginCtrl'
-            /*onEnter: function ($stateParams, $state, $modal, $resource, $log) {
-             $log.log($state);
-             $modal.open({
-             templateUrl: "auth/login",
-             controller: 'LoginCtrl'
-             }).result.then(function (result) {
-             if (result) {
-             return $state.go('user.home');
-             } else {
-             return $state.go('^');
-             }
-             });
-             }*/
         })
         .state('anon.register', {
             url: '/register/',
             templateUrl: '/partials/auth/register',
             controller: 'RegisterCtrl'
-            /* onEnter: function ($stateParams, $state, $modal, Restangular) {
-             $modal.open({
-             templateUrl: "auth/register",
-             resolve: {
-             item: function () {
-             }
-             },
-             controller: 'RegisterCtrl'
-             }).result.then(function (result) {
-             if (result) {
-             return $state.go('user.home');
-             }
-             });
-             }*/
         });
 
     // Regular user routes
-    //TODO define states for user, streams, profile, stream configuration and so on
     $stateProvider
         .state('user', {
             abstract: true,

@@ -8,7 +8,6 @@
  * */
 var BufferList = require('bl');
 var builder = require('xmlbuilder');
-var HashMap = require('hashmap').HashMap;
 
 
 var VideoBuffer = (function () {
@@ -16,7 +15,7 @@ var VideoBuffer = (function () {
         this.startingSegment = 0;
         this.bufferList = new BufferList();
         this.streamId = streamId;
-        this.segmentList = new HashMap();
+        this.segmentList = {};
         this.lastSegment = -1;
         this.segmentOffsetByte = 0;
         this.mpd = builder.create('MPD', {version: '1.0', encoding: 'UTF-8', standalone: true}, {pubid: null, sysid: null},
@@ -80,12 +79,12 @@ var VideoBuffer = (function () {
             console.log('\tRequested segment that is no longer in the buffer');
             return '';
         } else {
-            if (segmentNumber > this.startingSegment + this.segmentList.count() - 1) {
+            if (segmentNumber > this.startingSegment + Object.keys(this.segmentList).length - 1) {
                 console.log('\tThe segment has not been received yet');
                 return '';
             } else {
-                console.log('\tRight segment index received ' + this.segmentList.get(segmentNumber));
-                var segment = this.segmentList.get(segmentNumber);
+                console.log('\tRight segment index received ' + this.segmentList[segmentNumber]);
+                var segment = this.segmentList[segmentNumber];
                 console.log('\tGetting data for segment corresponding with index: ' + (parseInt(segment.startingIndex) - parseInt(this.segmentOffsetByte)) + '-' + (parseInt(segment.endingIndex) - parseInt(this.segmentOffsetByte)));
                 return this.bufferList.slice(parseInt(segment.startingIndex) - parseInt(this.segmentOffsetByte), parseInt(segment.endingIndex - this.segmentOffsetByte) + 1);
             }
@@ -94,31 +93,31 @@ var VideoBuffer = (function () {
 
 
     VideoBuffer.prototype.updateMPD = function (segmentLength) {
-        if (this.segmentList.has(this.lastSegment)) {
-            var lastSegment = this.segmentList.get(this.lastSegment);
-            this.segmentList.set(this.lastSegment + 1, {
+        if (this.lastSegment in this.segmentList) {
+            var lastSegment = this.segmentList[this.lastSegment];
+            this.segmentList[this.lastSegment + 1] = {
                 dataLength: segmentLength,
                 startingIndex: lastSegment.endingIndex + 1,
                 endingIndex: lastSegment.endingIndex + segmentLength
-            });
-            console.log('Creating segment with length: ' + segmentLength + '\n and data :' + JSON.stringify(this.segmentList.get(this.lastSegment + 1)));
-            if (this.segmentList.count() > 30) {
+            };
+            console.log('Creating segment with length: ' + segmentLength + '\n and data :' + JSON.stringify(this.segmentList[this.lastSegment + 1]));
+            if (Object.keys(this.segmentList).length > 30) {
                 var firstSegmentId = this.lastSegment - 29;
-                var firstSegment = this.segmentList.get(firstSegmentId);
+                var firstSegment = this.segmentList[firstSegmentId];
                 this.segmentOffsetByte += firstSegment.dataLength;
                 console.log('Consuming ' + firstSegment.dataLength);
                 this.bufferList.consume(firstSegment.dataLength);
-                this.segmentList.remove(firstSegmentId);
+                delete this.segmentList[firstSegmentId];
                 this.startingSegment++;
                 console.log('Removing segment with id :' + firstSegmentId);
             }
         }
         else {
-            this.segmentList.set(0, {
+            this.segmentList[0] = {
                 dataLength: segmentLength,
                 startingIndex: 0,
                 endingIndex: segmentLength - 1
-            });
+            };
 
         }
         this.lastSegment++;

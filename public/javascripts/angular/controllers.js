@@ -82,11 +82,20 @@ angular.module('streamApp').
         };
         User.getStreams(function (streams) {
             $log.info('Succesfully fetched user streams.')
-
-
             $scope.streams = streams;
         }, function (err) {
             $log.error('Error fetching user streams' + err);
             $rootScope.error = err;
         });
+    })
+    .controller('StreamingCtrl',function($scope,$stateParams){
+            var url = "/streams/" + $stateParams.streamId + "/mpd";
+            var context = new Dash.di.DashContext();
+            var player = new MediaPlayer(context);
+            player.startup();
+            player.autoplay = true;
+            player.debug = true;
+            player.liveEdge = true;
+            player.attachView(document.querySelector("#videoplayer"));
+            player.attachSource(url);
     });
