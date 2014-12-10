@@ -35,7 +35,10 @@
                     th Secret (do not share this with anyone)
             tbody
                 tr(data-ng-repeat='stream in streams')
-                    td {{stream.name}}
+                    td
+                        a(href='',ui-sref='public.stream({streamId:stream._id})')
+                            span.glyphicon.glyphicon-play-circle
+                        |{{stream.name}}
                     td {{stream.description}}
                     td {{stream._id}}
                     td {{stream.uploadSecretPassKey}}

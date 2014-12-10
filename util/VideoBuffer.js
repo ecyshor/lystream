@@ -22,24 +22,24 @@ var VideoBuffer = (function () {
             {allowSurrogateChars: false, skipNullAttributes: false,
                 headless: false, ignoreDecorators: false, stringify: {}});
         var date = new Date();
-        date.setSeconds(date.getSeconds() + 50);
         this.mpd.att({
             'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
             'xmlns': 'urn:mpeg:dash:schema:mpd:2011',
             'xsi:schemaLocation': 'urn:mpeg:dash:schema:mpd:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd',
             'type': 'dynamic',
             'availabilityStartTime': date.toJSON(),
-            'minBufferTime': 'PT1S',
+            'minBufferTime': 'PT6S',
             'profiles': 'urn:mpeg:dash:profile:isoff-live:2011',
-            'suggestedPresentationDelay': 'PT10S',
-            'timeShiftBufferDepth': 'PT50S',
-            'maxSegmentDuration': 'PT2.01S',
-            'minimumUpdatePeriod': 'PT10M'
+            'publishTime':date.toJSON(),
+            'suggestedPresentationDelay': 'PT4S',
+            'timeShiftBufferDepth': 'PT15S',
+            'maxSegmentDuration': 'PT2S',
+            'minimumUpdatePeriod': 'PT1000000M'
         });
         this.adaptationSet = this.mpd.ele('Period', {
             'id': '1',
             'bitstreamSwitching': 'true',
-            'start': 'PT0S'
+            'start': 'PT2S'
         })
             .ele('AdaptationSet', {
                 'mimeType': 'video/webm',
@@ -52,7 +52,7 @@ var VideoBuffer = (function () {
         this.adaptationSet.ele('ContentComponent ', {
             'id': '1',
             'contentType': 'video'
-        })
+        });
         this.segmentTemplate = this.adaptationSet.ele('SegmentTemplate', {
             'presentationTimeOffset': '0',
             'timescale': '1000',
@@ -138,19 +138,3 @@ var VideoBuffer = (function () {
 })();
 
 module.exports = VideoBuffer;
-/*new FFmpeg({source: req}).
- on('error', function (err) {
- console.log('Error:' + err.message);
- }).on('progress', function (progress) {
- console.log('Processing stream 1');
- console.log('Processing at ' + progress.currentKbps);
- console.log('Processing frames ' + progress.frames);
- console.log('Processing at FPS' + progress.currentFps);
- console.log('Processing target size: ' + progress.targetSize);
- console.log('Processing timemark: ' + progress.timemark);
- }).
- on('end', function () {
- console.log('reached the end');
- res.end();
- }).writeToStream(channelStream, { end: true });
- */

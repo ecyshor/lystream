@@ -4,8 +4,8 @@
 var HashMap = require('hashmap').HashMap,
     VideoBuffer = require('../util/VideoBuffer'),
     log = require('debug')('lystream:StreamingService');
+
 var streamMap = new HashMap();
-console.log('Init streamingService');
 function StreamingService () {
     if (!(this instanceof StreamingService)) {
         return new StreamingService();
