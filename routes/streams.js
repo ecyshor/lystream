@@ -106,6 +106,18 @@ router.head('/:streamId/:segmentNo', function (req, res) {
     });
     res.end();
 });
+/*Deliver init segment*/
+router.get('/:streamId/init', function (req, res) {
+    res.set({
+        'Connection': 'keep-alive',
+        'Content-Type': 'video/webm',
+        'Accept-Ranges': 'bytes',
+        'Transfer-Encoding': 'chunked',
+        'Content-Length': '432'
+    });
+    res.write(streamingService.getVideoBufferForStream(req.param(streamId)).getInitSegment());
+    res.end();
+});
 /*Deliver segment*/
 router.get('/:streamId/:segmentNo', function (req, res) {
     log('Getting segment ' + req.param('segmentNo') + ' for stream ' + req.param(streamId));
@@ -129,18 +141,6 @@ router.get('/:streamId/:segmentNo', function (req, res) {
         res.end();
     }
 });
-/*Deliver init segment*/
-router.get('/:streamId', function (req, res) {
-    res.set({
-        'Connection': 'keep-alive',
-        'Content-Type': 'video/webm',
-        'Accept-Ranges': 'bytes',
-        'Transfer-Encoding': 'chunked',
-        'Content-Length': '432',
-        'Content-Range': '0-431/432'
-    });
-    res.write(streamingService.getVideoBufferForStream(req.param(streamId)).getInitSegment());
-    res.end();
-});
+
 
 module.exports = router;

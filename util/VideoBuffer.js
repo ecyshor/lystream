@@ -22,24 +22,25 @@ var VideoBuffer = (function () {
             {allowSurrogateChars: false, skipNullAttributes: false,
                 headless: false, ignoreDecorators: false, stringify: {}});
         var date = new Date();
+        date.setSeconds(date.getSeconds() + 6);
         this.mpd.att({
             'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
             'xmlns': 'urn:mpeg:dash:schema:mpd:2011',
             'xsi:schemaLocation': 'urn:mpeg:dash:schema:mpd:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd',
             'type': 'dynamic',
             'availabilityStartTime': date.toJSON(),
-            'minBufferTime': 'PT6S',
+            'minBufferTime': 'PT0S',
             'profiles': 'urn:mpeg:dash:profile:isoff-live:2011',
             'publishTime':date.toJSON(),
-            'suggestedPresentationDelay': 'PT4S',
-            'timeShiftBufferDepth': 'PT15S',
-            'maxSegmentDuration': 'PT2S',
-            'minimumUpdatePeriod': 'PT1000000M'
+            'suggestedPresentationDelay': 'PT2S',
+            'timeShiftBufferDepth': 'PT2S',
+            'maxSegmentDuration': 'PT2.00S',
+            'minimumUpdatePeriod': 'PT10H'
         });
         this.adaptationSet = this.mpd.ele('Period', {
             'id': '1',
             'bitstreamSwitching': 'true',
-            'start': 'PT2S'
+            'start': 'PT0S'
         })
             .ele('AdaptationSet', {
                 'mimeType': 'video/webm',
@@ -47,7 +48,7 @@ var VideoBuffer = (function () {
                 'startWithSAP': '1',
                 'maxWidth': '1280',
                 'maxHeight': '720',
-                'maxFrameRate': '10'
+                'maxFrameRate': '25'
             });
         this.adaptationSet.ele('ContentComponent ', {
             'id': '1',
@@ -61,9 +62,9 @@ var VideoBuffer = (function () {
         });
         this.adaptationSet.ele('Representation', {
             'id': '1',
-            'width': '1280',
-            'height': '720',
-            'frameRate': '10',
+            'width': '1024',
+            'height': '768',
+            'frameRate': '25',
             'bandwidth': '360000',
             'codecs': 'vp8',
             'scanType': 'progressive'
@@ -71,6 +72,9 @@ var VideoBuffer = (function () {
     }
 
     VideoBuffer.prototype.append = function (buffer) {
+        if(this.init === undefined){
+            this.init = buffer;
+        }
         this.bufferList.append(buffer);
     };
     VideoBuffer.prototype.getSegmentData = function (segmentNumber) {
@@ -125,14 +129,14 @@ var VideoBuffer = (function () {
 
     VideoBuffer.prototype.getMPD = function () {
         this.segmentTemplate.att('startNumber', 0);
-//        this.segmentTemplate.att('initialization', (this.lastSegment - 29 >= 0 ? this.lastSegment - 28 : 0) + '/');
-        this.segmentTemplate.att('initialization', this.lastSegment + '/');
+        //this.mpd.att('availabilityStartTime', date.toJSON());
+        this.segmentTemplate.att('initialization','init/');
         return this.mpd.toString();
     };
 
     VideoBuffer.prototype.getInitSegment = function(){
-        return this.bufferList.slice(0, 432);
-    }
+        return this.init;
+    };
 
     return VideoBuffer;
 })();
