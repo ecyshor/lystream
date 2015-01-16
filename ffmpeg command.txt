@@ -302,3 +302,4 @@ ffmpeg -rtbufsize 1500M -f x11grab -video_size cif -framerate 25 -i :0.0 -flags 
 
 ffmpeg -f x11grab -r 25 -s 1280x768 -i :0.0 -flags +global_header -vcodec libvpx -maxrate 1000k -bufsize 6000k -g 50 -cpu-used 0 -qmin 10 -qmax 42 -threads 4 -quality realtime -map 0 -an -f stream_segment -segment_time 2 -segment_format webm http://localhost:3000/streams/f11efd97a8df79ae132acada4318648bde86c504/%03d
 
+ecyshor@ecyshor-Lenovo-G50-70:~$ ffmpeg -r 10 -f x11grab -s 1360x768 -i :0.0 -r 10 -flags +global_header -vcodec libvpx -g 1  -deadline realtime -profile:v 0 -cpu-used 0 -vb 1500k -qmin 10 -qmax 42  -threads 3 -bufsize 9000k -slices 8 -map 0 -f stream_segment -segment_time 2 -segment_time_delta 0.01666 -segment_format webm -dash 1 -segment_list_flags live http://localhost:3000/streams/f11efd97a8df79ae132acada4318648bde86c504/%03d

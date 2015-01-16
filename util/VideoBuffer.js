@@ -1,13 +1,9 @@
 /**
  * Created by nreut on 15-Jun-14.
  */
-/**
- * A buffer that contains the last bytes received. The number of bytes stored by
- * default is 1000000 and can be configured for different types of stream so that
- * we can hold the approximate same video length no matter what the quality is.
- * */
 var BufferList = require('bl');
 var builder = require('xmlbuilder');
+log = require('debug')('lystream:streaming:VideoBuffer');
 
 
 var VideoBuffer = (function () {
@@ -32,8 +28,8 @@ var VideoBuffer = (function () {
             'minBufferTime': 'PT0S',
             'profiles': 'urn:mpeg:dash:profile:isoff-live:2011',
             'publishTime':date.toJSON(),
-            'suggestedPresentationDelay': 'PT2S',
-            'timeShiftBufferDepth': 'PT2S',
+            'suggestedPresentationDelay': 'PT0S',
+            'timeShiftBufferDepth': 'PT6S',
             'maxSegmentDuration': 'PT2.00S',
             'minimumUpdatePeriod': 'PT10H'
         });
@@ -73,6 +69,7 @@ var VideoBuffer = (function () {
 
     VideoBuffer.prototype.append = function (buffer) {
         if(this.init === undefined){
+            log('Setting init segment with length ' + buffer.length);
             this.init = buffer;
         }
         this.bufferList.append(buffer);
@@ -80,16 +77,16 @@ var VideoBuffer = (function () {
     VideoBuffer.prototype.getSegmentData = function (segmentNumber) {
         segmentNumber = parseInt(segmentNumber);
         if (segmentNumber < this.startingSegment) {
-            console.log('\tRequested segment that is no longer in the buffer');
+            log('\tRequested segment that is no longer in the buffer');
             return '';
         } else {
             if (segmentNumber > this.startingSegment + Object.keys(this.segmentList).length - 1) {
-                console.log('\tThe segment has not been received yet');
+                log('\tThe segment has not been received yet');
                 return '';
             } else {
-                console.log('\tRight segment index received ' + this.segmentList[segmentNumber]);
+                log('\tRight segment index received ' + this.segmentList[segmentNumber]);
                 var segment = this.segmentList[segmentNumber];
-                console.log('\tGetting data for segment corresponding with index: ' + (parseInt(segment.startingIndex) - parseInt(this.segmentOffsetByte)) + '-' + (parseInt(segment.endingIndex) - parseInt(this.segmentOffsetByte)));
+                log('\tGetting data for segment corresponding with index: ' + (parseInt(segment.startingIndex) - parseInt(this.segmentOffsetByte)) + '-' + (parseInt(segment.endingIndex) - parseInt(this.segmentOffsetByte)));
                 return this.bufferList.slice(parseInt(segment.startingIndex) - parseInt(this.segmentOffsetByte), parseInt(segment.endingIndex - this.segmentOffsetByte) + 1);
             }
         }
@@ -105,8 +102,8 @@ var VideoBuffer = (function () {
                 endingIndex: lastSegment.endingIndex + segmentLength
             };
             console.log('Creating segment with length: ' + segmentLength + '\n and data :' + JSON.stringify(this.segmentList[this.lastSegment + 1]));
-            if (Object.keys(this.segmentList).length > 30) {
-                var firstSegmentId = this.lastSegment - 29;
+            if (Object.keys(this.segmentList).length > 5) {
+                var firstSegmentId = this.lastSegment - 4;
                 var firstSegment = this.segmentList[firstSegmentId];
                 this.segmentOffsetByte += firstSegment.dataLength;
                 console.log('Consuming ' + firstSegment.dataLength);
@@ -124,6 +121,9 @@ var VideoBuffer = (function () {
             };
 
         }
+
+        this.lastSegmentTimestamp = new Date().getTime();
+        log('Set last segment timestamp ' + this.lastSegmentTimestamp);
         this.lastSegment++;
     };
 
@@ -136,6 +136,12 @@ var VideoBuffer = (function () {
 
     VideoBuffer.prototype.getInitSegment = function(){
         return this.init;
+    };
+
+    VideoBuffer.prototype.isAlive = function(){
+        var difference = new Date().getTime() - this.lastSegmentTimestamp;
+        log('Checking alive status, difference between timestamps: ' + difference);
+      return  difference < 2500;
     };
 
     return VideoBuffer;

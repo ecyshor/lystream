@@ -50,7 +50,7 @@ router.post('/', function (req, res) {
 
 
 /*Upload*/
-router.post('/:streamSecretId/*', function (req, res) {
+router.post('/:streamSecretId/:segmentNo', function (req, res) {
     var query = Stream.where({ uploadSecretPassKey: req.param('streamSecretId') });
     query.findOne(function (err, stream) {
             if (err) {
@@ -69,7 +69,7 @@ router.post('/:streamSecretId/*', function (req, res) {
                     vidBuf.append(data);
                 });
                 req.on('end', function () {
-                    log('Terminating segment for stream with id: ' + stream.id);
+                    log('Terminating segment for stream with number ' + req.param('segmentNo') + 'with id: ' + stream.id);
                     vidBuf.updateMPD(segmentLength);
                     res.end();
                 });
