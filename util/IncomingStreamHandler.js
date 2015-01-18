@@ -111,12 +111,12 @@ var IncomingStreamHandler = (function () {
     IncomingStreamHandler.prototype.getMPD = function () {
         this.segmentTemplate.att('startNumber', 0);
         //this.mpd.att('availabilityStartTime', date.toJSON());
-        this.segmentTemplate.att('initialization', 'init/');
+        this.segmentTemplate.att('initialization', '$RepresentationID$/init');
         return this.mpd.toString();
     };
 
-    IncomingStreamHandler.prototype.getInitSegment = function () {
-        return this.init;
+    IncomingStreamHandler.prototype.getInitSegment = function (representation) {
+        this.bufferRepresentations[representation].getInitSegment();
     };
     /**
      * Checks if a segment has been received to this stream in the last 10 seconds by comparing current timestamp

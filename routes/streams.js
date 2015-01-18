@@ -87,20 +87,20 @@ router.get('/:streamId/mpd', function (req, res) {
     }
 });
 /*Head for segment*/
-router.head('/:streamId/:segmentNo', function (req, res) {
-    log('Head: Requesting segment number ' + req.param('segmentNo') + ' for stream with id ' + req.param(streamId));
-    log('\tHead: Segment from stream with length ' + streamingService.getIncomingStreamHandler(req.param(streamId)).getSegmentData(req.param('segmentNo')).length);
+router.head('/:streamId/:representationId/:segmentNo', function (req, res) {
+    log('Head: Requesting segment number ' + req.param('segmentNo')+ ' for representation ' + req.param('representationId') + ' for stream with id ' + req.param(streamId));
+    log('\tHead: Segment from stream with length ' + streamingService.getIncomingStreamHandler(req.param(streamId)).getSegmentData(req.param('representationId'), req.param('segmentNo')).length);
     res.set({
         'Connection': 'keep-alive',
         'Content-Type': 'video/webm',
         'Accept-Ranges': 'bytes',
         'Transfer-Encoding': 'chunked',
-        'Content-Length': streamingService.getIncomingStreamHandler(req.param(streamId)).getSegmentData(req.param('segmentNo')).length
+        'Content-Length': streamingService.getIncomingStreamHandler(req.param(streamId)).getSegmentData(req.param('representationId'), req.param('segmentNo')).length
     });
     res.end();
 });
 /*Deliver init segment*/
-router.get('/:streamId/init', function (req, res) {
+router.get('/:streamId/:representationId/init', function (req, res) {
     res.set({
         'Connection': 'keep-alive',
         'Content-Type': 'video/webm',
@@ -108,11 +108,11 @@ router.get('/:streamId/init', function (req, res) {
         'Transfer-Encoding': 'chunked',
         'Content-Length': '432'
     });
-    res.write(streamingService.getIncomingStreamHandler(req.param(streamId)).getInitSegment());
+    res.write(streamingService.getIncomingStreamHandler(req.param(streamId)).getInitSegment(req.param('representationId')));
     res.end();
 });
 /*Deliver segment*/
-router.get('/:streamId/:segmentNo', function (req, res) {
+router.get('/:streamId/:representationId/:segmentNo', function (req, res) {
     log('Getting segment ' + req.param('segmentNo') + ' for stream ' + req.param(streamId));
     if (streamingService.isStreaming(req.param(streamId))) {
         var bufferStream = streamingService.getIncomingStreamHandler(req.param(streamId));
@@ -123,10 +123,10 @@ router.get('/:streamId/:segmentNo', function (req, res) {
                 'Content-Type': 'video/webm',
                 'Accept-Ranges': 'bytes',
                 'Transfer-Encoding': 'chunked',
-                'Content-Length': bufferStream.getSegmentData(req.param('segmentNo')).length
+                'Content-Length': bufferStream.getSegmentData(req.param('representationId'), req.param('segmentNo')).length
             });
         log('Client: Getting stream and piping for stream with id ' + req.param(streamId));
-        res.write(bufferStream.getSegmentData(req.param('segmentNo')), 'binary');
+        res.write(bufferStream.getSegmentData(req.param('representationId'), req.param('segmentNo')), 'binary');
         res.end();
     }
     else {
