@@ -18,7 +18,7 @@ var VideoBuffer = (function () {
             {allowSurrogateChars: false, skipNullAttributes: false,
                 headless: false, ignoreDecorators: false, stringify: {}});
         var date = new Date();
-        date.setSeconds(date.getSeconds() + 6);
+        date.setSeconds(date.getSeconds() + 8);
         this.mpd.att({
             'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
             'xmlns': 'urn:mpeg:dash:schema:mpd:2011',
@@ -29,9 +29,9 @@ var VideoBuffer = (function () {
             'profiles': 'urn:mpeg:dash:profile:isoff-live:2011',
             'publishTime':date.toJSON(),
             'suggestedPresentationDelay': 'PT0S',
-            'timeShiftBufferDepth': 'PT6S',
-            'maxSegmentDuration': 'PT2.00S',
-            'minimumUpdatePeriod': 'PT10H'
+            'timeShiftBufferDepth': 'PT4S',
+            'maxSegmentDuration': 'PT2.00S'
+            //'minimumUpdatePeriod': 'PT10H'
         });
         this.adaptationSet = this.mpd.ele('Period', {
             'id': '1',
@@ -137,11 +137,14 @@ var VideoBuffer = (function () {
     VideoBuffer.prototype.getInitSegment = function(){
         return this.init;
     };
-
+    /**
+     * Checks if a segment has been received to that stream in the last ten seconds by comparing curent
+     * timestamp to timpestamp of last received segment
+     * */
     VideoBuffer.prototype.isAlive = function(){
         var difference = new Date().getTime() - this.lastSegmentTimestamp;
         log('Checking alive status, difference between timestamps: ' + difference);
-      return  difference < 2500;
+      return  difference < 10000;
     };
 
     return VideoBuffer;
