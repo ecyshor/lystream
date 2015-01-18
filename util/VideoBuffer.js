@@ -7,64 +7,12 @@ log = require('debug')('lystream:streaming:VideoBuffer');
 
 
 var VideoBuffer = (function () {
-    function VideoBuffer(streamId) {
+    function VideoBuffer() {
         this.startingSegment = 0;
         this.bufferList = new BufferList();
-        this.streamId = streamId;
         this.segmentList = {};
         this.lastSegment = -1;
         this.segmentOffsetByte = 0;
-        this.mpd = builder.create('MPD', {version: '1.0', encoding: 'UTF-8', standalone: true}, {pubid: null, sysid: null},
-            {allowSurrogateChars: false, skipNullAttributes: false,
-                headless: false, ignoreDecorators: false, stringify: {}});
-        var date = new Date();
-        date.setSeconds(date.getSeconds() + 6);
-        this.mpd.att({
-            'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-            'xmlns': 'urn:mpeg:dash:schema:mpd:2011',
-            'xsi:schemaLocation': 'urn:mpeg:dash:schema:mpd:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd',
-            'type': 'dynamic',
-            'availabilityStartTime': date.toJSON(),
-            'minBufferTime': 'PT0S',
-            'profiles': 'urn:mpeg:dash:profile:isoff-live:2011',
-            'publishTime':date.toJSON(),
-            'suggestedPresentationDelay': 'PT0S',
-            'timeShiftBufferDepth': 'PT6S',
-            'maxSegmentDuration': 'PT2.00S',
-            'minimumUpdatePeriod': 'PT10H'
-        });
-        this.adaptationSet = this.mpd.ele('Period', {
-            'id': '1',
-            'bitstreamSwitching': 'true',
-            'start': 'PT0S'
-        })
-            .ele('AdaptationSet', {
-                'mimeType': 'video/webm',
-                'segmentAlignment': 'true',
-                'startWithSAP': '1',
-                'maxWidth': '1280',
-                'maxHeight': '720',
-                'maxFrameRate': '25'
-            });
-        this.adaptationSet.ele('ContentComponent ', {
-            'id': '1',
-            'contentType': 'video'
-        });
-        this.segmentTemplate = this.adaptationSet.ele('SegmentTemplate', {
-            'presentationTimeOffset': '0',
-            'timescale': '1000',
-            'media': '$Number$/',
-            'duration': '2000'
-        });
-        this.adaptationSet.ele('Representation', {
-            'id': '1',
-            'width': '1024',
-            'height': '768',
-            'frameRate': '25',
-            'bandwidth': '360000',
-            'codecs': 'vp8',
-            'scanType': 'progressive'
-        });
     }
 
     VideoBuffer.prototype.append = function (buffer) {
@@ -81,19 +29,22 @@ var VideoBuffer = (function () {
             return '';
         } else {
             if (segmentNumber > this.startingSegment + Object.keys(this.segmentList).length - 1) {
-                log('\tThe segment has not been received yet');
+                log('The segment has not been received yet');
                 return '';
             } else {
-                log('\tRight segment index received ' + this.segmentList[segmentNumber]);
+                log('Right segment index received ' + this.segmentList[segmentNumber]);
                 var segment = this.segmentList[segmentNumber];
-                log('\tGetting data for segment corresponding with index: ' + (parseInt(segment.startingIndex) - parseInt(this.segmentOffsetByte)) + '-' + (parseInt(segment.endingIndex) - parseInt(this.segmentOffsetByte)));
+                log('Getting data for segment corresponding with index: ' + (parseInt(segment.startingIndex) - parseInt(this.segmentOffsetByte)) + '-' + (parseInt(segment.endingIndex) - parseInt(this.segmentOffsetByte)));
                 return this.bufferList.slice(parseInt(segment.startingIndex) - parseInt(this.segmentOffsetByte), parseInt(segment.endingIndex - this.segmentOffsetByte) + 1);
             }
         }
     };
 
-
-    VideoBuffer.prototype.updateMPD = function (segmentLength) {
+    /**
+     * Method that must be called after all the data for a segment has been received. The indexing of the segments for
+     * the buffer are updated
+     * */
+    VideoBuffer.prototype.updateBuffer = function (segmentLength) {
         if (this.lastSegment in this.segmentList) {
             var lastSegment = this.segmentList[this.lastSegment];
             this.segmentList[this.lastSegment + 1] = {
@@ -121,27 +72,11 @@ var VideoBuffer = (function () {
             };
 
         }
-
-        this.lastSegmentTimestamp = new Date().getTime();
-        log('Set last segment timestamp ' + this.lastSegmentTimestamp);
         this.lastSegment++;
-    };
-
-    VideoBuffer.prototype.getMPD = function () {
-        this.segmentTemplate.att('startNumber', 0);
-        //this.mpd.att('availabilityStartTime', date.toJSON());
-        this.segmentTemplate.att('initialization','init/');
-        return this.mpd.toString();
     };
 
     VideoBuffer.prototype.getInitSegment = function(){
         return this.init;
-    };
-
-    VideoBuffer.prototype.isAlive = function(){
-        var difference = new Date().getTime() - this.lastSegmentTimestamp;
-        log('Checking alive status, difference between timestamps: ' + difference);
-      return  difference < 2500;
     };
 
     return VideoBuffer;

@@ -59,18 +59,11 @@ router.post('/:streamSecretId/:segmentNo', function (req, res) {
                 res.end();
             }else{
             if (stream !== null) {
-                log('Retrieved user stream with secret and id ');
-                log('Source: Starting stream ' + stream.id);
-                var vidBuf = streamingService.getVideoBufferForStream(stream.id);
-
-                var segmentLength = 0;
-                req.on('data', function (data) {
-                    segmentLength += data.length;
-                    vidBuf.append(data);
-                });
+                log('Receiving data for stream ' + stream.id);
+                var streamHandler = streamingService.getIncomingStreamHandler(stream.id);
+                streamHandler.handleStreamData(req);
                 req.on('end', function () {
                     log('Terminating segment for stream with number ' + req.param('segmentNo') + 'with id: ' + stream.id);
-                    vidBuf.updateMPD(segmentLength);
                     res.end();
                 });
             } else {
@@ -85,7 +78,7 @@ router.post('/:streamSecretId/:segmentNo', function (req, res) {
 router.get('/:streamId/mpd', function (req, res) {
     if (streamingService.isStreaming(req.param(streamId))) {
         res.set({'Content-Type': 'application/xml'});
-        res.write(streamingService.getVideoBufferForStream(req.param(streamId)).getMPD());
+        res.write(streamingService.getIncomingStreamHandler(req.param(streamId)).getMPD());
         res.end();
     }
     else {
@@ -96,13 +89,13 @@ router.get('/:streamId/mpd', function (req, res) {
 /*Head for segment*/
 router.head('/:streamId/:segmentNo', function (req, res) {
     log('Head: Requesting segment number ' + req.param('segmentNo') + ' for stream with id ' + req.param(streamId));
-    log('\tHead: Segment from stream with length ' + streamingService.getVideoBufferForStream(req.param(streamId)).getSegmentData(req.param('segmentNo')).length);
+    log('\tHead: Segment from stream with length ' + streamingService.getIncomingStreamHandler(req.param(streamId)).getSegmentData(req.param('segmentNo')).length);
     res.set({
         'Connection': 'keep-alive',
         'Content-Type': 'video/webm',
         'Accept-Ranges': 'bytes',
         'Transfer-Encoding': 'chunked',
-        'Content-Length': streamingService.getVideoBufferForStream(req.param(streamId)).getSegmentData(req.param('segmentNo')).length
+        'Content-Length': streamingService.getIncomingStreamHandler(req.param(streamId)).getSegmentData(req.param('segmentNo')).length
     });
     res.end();
 });
@@ -115,14 +108,14 @@ router.get('/:streamId/init', function (req, res) {
         'Transfer-Encoding': 'chunked',
         'Content-Length': '432'
     });
-    res.write(streamingService.getVideoBufferForStream(req.param(streamId)).getInitSegment());
+    res.write(streamingService.getIncomingStreamHandler(req.param(streamId)).getInitSegment());
     res.end();
 });
 /*Deliver segment*/
 router.get('/:streamId/:segmentNo', function (req, res) {
     log('Getting segment ' + req.param('segmentNo') + ' for stream ' + req.param(streamId));
     if (streamingService.isStreaming(req.param(streamId))) {
-        var bufferStream = streamingService.getVideoBufferForStream(req.param(streamId));
+        var bufferStream = streamingService.getIncomingStreamHandler(req.param(streamId));
         log('\t Buffer Stream ' + bufferStream);
         res.set(
             {

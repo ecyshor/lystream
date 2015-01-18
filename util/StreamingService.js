@@ -2,41 +2,40 @@
  * Created by ecyshor on 27.11.2014.
  */
 var HashMap = require('hashmap').HashMap,
-    VideoBuffer = require('../util/VideoBuffer'),
+    IncomingStreamHandler = require('../util/IncomingStreamHandler'),
     log = require('debug')('lystream:StreamingService');
 
 var streamMap = new HashMap();
-function StreamingService () {
+function StreamingService() {
     if (!(this instanceof StreamingService)) {
         return new StreamingService();
     }
 }
-StreamingService.prototype.getVideoBufferForStream = function(streamId){
-        var vidBuf;
-        if (!streamMap.has(streamId)) {
-            log('The stream is new, creating video buffer.');
-            vidBuf = new VideoBuffer(streamId);
-            streamMap.set(streamId, vidBuf);
-            setTimeout(checkAlive, 3000, vidBuf, streamId);
-        } else {
-            log('Video buffer already exists');
-            vidBuf = streamMap.get(streamId);
-        }
+StreamingService.prototype.getIncomingStreamHandler = function (streamId) {
+    var incomingStreamHandler;
+    if (!streamMap.has(streamId)) {
+        log('The stream is new, creating stream handler.');
+        incomingStreamHandler = new IncomingStreamHandler();
+        streamMap.set(streamId, incomingStreamHandler);
+        setTimeout(checkAlive, 3000, incomingStreamHandler, streamId);
+    } else {
+        log('Video buffer already exists');
+        incomingStreamHandler = streamMap.get(streamId);
+    }
+    return incomingStreamHandler;
+};
 
-        return vidBuf;
-    };
-
-StreamingService.prototype.isStreaming = function(streamId){
+StreamingService.prototype.isStreaming = function (streamId) {
     return streamMap.has(streamId);
 };
 
-function checkAlive(vidBuf,streamId){
+function checkAlive(streamHandler, streamId) {
     log('Checking status for stream with id ' + streamId);
-    if(!vidBuf.isAlive()){
+    if (!streamHandler.isAlive()) {
         log('Buffer for stream ' + streamId + ' is inactive, deleting stream.')
         streamMap.remove(streamId);
-    }else{
-        setTimeout(checkAlive, 3000, vidBuf, streamId);
+    } else {
+        setTimeout(checkAlive, 3000, streamHandler, streamId);
     }
 }
 exports.StreamingService = new StreamingService();
