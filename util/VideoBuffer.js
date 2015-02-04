@@ -2,8 +2,8 @@
  * Created by nreut on 15-Jun-14.
  */
 var BufferList = require('bl');
-var builder = require('xmlbuilder');
-log = require('debug')('lystream:streaming:VideoBuffer');
+
+log = require('debug')('lystream:streaming:VideoBuffer ');
 
 
 var VideoBuffer = (function () {
@@ -52,16 +52,16 @@ var VideoBuffer = (function () {
                 startingIndex: lastSegment.endingIndex + 1,
                 endingIndex: lastSegment.endingIndex + segmentLength
             };
-            console.log('Creating segment with length: ' + segmentLength + '\n and data :' + JSON.stringify(this.segmentList[this.lastSegment + 1]));
-            if (Object.keys(this.segmentList).length > 5) {
-                var firstSegmentId = this.lastSegment - 4;
+            log('Creating segment with length: ' + segmentLength + '\n and data :' + JSON.stringify(this.segmentList[this.lastSegment + 1]));
+            if (Object.keys(this.segmentList).length > 6) {
+                var firstSegmentId = this.lastSegment - 5;
                 var firstSegment = this.segmentList[firstSegmentId];
                 this.segmentOffsetByte += firstSegment.dataLength;
-                console.log('Consuming ' + firstSegment.dataLength);
+                log('Consuming ' + firstSegment.dataLength);
                 this.bufferList.consume(firstSegment.dataLength);
                 delete this.segmentList[firstSegmentId];
                 this.startingSegment++;
-                console.log('Removing segment with id :' + firstSegmentId);
+                log('Removing segment with id :' + firstSegmentId);
             }
         }
         else {

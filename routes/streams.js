@@ -51,7 +51,7 @@ router.post('/', function (req, res) {
 
 /*Upload*/
 router.post('/:streamSecretId/:segmentNo', function (req, res) {
-    var query = Stream.where({ uploadSecretPassKey: req.param('streamSecretId') });
+    var query = Stream.where({ uploadSecretPassKey: req.params['streamSecretId']});
     query.findOne(function (err, stream) {
             if (err) {
                 log('Error retrieving stream for upload');
@@ -63,11 +63,11 @@ router.post('/:streamSecretId/:segmentNo', function (req, res) {
                 var streamHandler = streamingService.getIncomingStreamHandler(stream.id);
                 streamHandler.handleStreamData(req);
                 req.on('end', function () {
-                    log('Terminating segment for stream with number ' + req.param('segmentNo') + 'with id: ' + stream.id);
+                    log('Terminating segment for stream with number ' + req.params['segmentNo'] + 'with id: ' + stream.id);
                     res.end();
                 });
             } else {
-                log('No stream found for secret' + req.param('streamSecretId'));
+                log('No stream found for secret' + req.params['streamSecretId']);
                 res.status(404).json({error: 'Incorrect stream id/secret'});
                 res.end();
             }
@@ -76,9 +76,9 @@ router.post('/:streamSecretId/:segmentNo', function (req, res) {
 });
 /*Deliver mpd for stream*/
 router.get('/:streamId/mpd', function (req, res) {
-    if (streamingService.isStreaming(req.param(streamId))) {
+    if (streamingService.isStreaming(req.params[streamId])) {
         res.set({'Content-Type': 'application/xml'});
-        res.write(streamingService.getIncomingStreamHandler(req.param(streamId)).getMPD());
+        res.write(streamingService.getIncomingStreamHandler(req.params[streamId]).getMPD());
         res.end();
     }
     else {
@@ -88,14 +88,13 @@ router.get('/:streamId/mpd', function (req, res) {
 });
 /*Head for segment*/
 router.head('/:streamId/:representationId/:segmentNo', function (req, res) {
-    log('Head: Requesting segment number ' + req.param('segmentNo')+ ' for representation ' + req.param('representationId') + ' for stream with id ' + req.param(streamId));
-    log('\tHead: Segment from stream with length ' + streamingService.getIncomingStreamHandler(req.param(streamId)).getSegmentData(req.param('representationId'), req.param('segmentNo')).length);
+    log('Head: Requesting segment number ' + req.params['segmentNo']+ ' for representation ' + req.params['representationId'] + ' for stream with id ' + req.params[streamId]);
     res.set({
         'Connection': 'keep-alive',
         'Content-Type': 'video/webm',
         'Accept-Ranges': 'bytes',
         'Transfer-Encoding': 'chunked',
-        'Content-Length': streamingService.getIncomingStreamHandler(req.param(streamId)).getSegmentData(req.param('representationId'), req.param('segmentNo')).length
+        'Content-Length': streamingService.getIncomingStreamHandler(req.params[streamId]).getSegment(req.params['representationId'], req.params['segmentNo']).length
     });
     res.end();
 });
@@ -108,14 +107,14 @@ router.get('/:streamId/:representationId/init', function (req, res) {
         'Transfer-Encoding': 'chunked',
         'Content-Length': '432'
     });
-    res.write(streamingService.getIncomingStreamHandler(req.param(streamId)).getInitSegment(req.param('representationId')));
+    res.write(streamingService.getIncomingStreamHandler(req.params[streamId]).getInitSegment(req.params['representationId']));
     res.end();
 });
 /*Deliver segment*/
 router.get('/:streamId/:representationId/:segmentNo', function (req, res) {
-    log('Getting segment ' + req.param('segmentNo') + ' for stream ' + req.param(streamId));
-    if (streamingService.isStreaming(req.param(streamId))) {
-        var bufferStream = streamingService.getIncomingStreamHandler(req.param(streamId));
+    log('Getting segment ' + req.params['segmentNo'] + ' for stream ' + req.params[streamId]);
+    if (streamingService.isStreaming(req.params[streamId])) {
+        var bufferStream = streamingService.getIncomingStreamHandler(req.params[streamId]);
         log('\t Buffer Stream ' + bufferStream);
         res.set(
             {
@@ -123,10 +122,10 @@ router.get('/:streamId/:representationId/:segmentNo', function (req, res) {
                 'Content-Type': 'video/webm',
                 'Accept-Ranges': 'bytes',
                 'Transfer-Encoding': 'chunked',
-                'Content-Length': bufferStream.getSegmentData(req.param('representationId'), req.param('segmentNo')).length
+                'Content-Length': bufferStream.getSegment(req.params['representationId'], req.params['segmentNo']).length
             });
-        log('Client: Getting stream and piping for stream with id ' + req.param(streamId));
-        res.write(bufferStream.getSegmentData(req.param('representationId'), req.param('segmentNo')), 'binary');
+        log('Client: Getting stream and piping for stream with id ' + req.params[streamId]);
+        res.write(bufferStream.getSegment(req.params['representationId'], req.params['segmentNo']), 'binary');
         res.end();
     }
     else {

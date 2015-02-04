@@ -57,7 +57,6 @@ module.exports = function (app) {
  * Check for user privilege for every route request, if it has the correct role
  * */
 function ensureAuthorized(req, res, next) {
-    log('Checking access for request path ' + req.originalUrl + ' for user ' + req.user);
     var role;
     if (!req.user)
         role = userRoles.public;
@@ -65,7 +64,7 @@ function ensureAuthorized(req, res, next) {
         role = req.user.role;
     var accessLevel;
     try {
-        log('Finding route access level for route with original url ' + req.originalUrl);
+        //log('Finding route access level for route with original url ' + req.originalUrl);
         var route = _.find(routes, function (route) {
                 var routePath = route.path.test(req.originalUrl);
                 var requestMethod = route.requestMethod.indexOf(req.method.toUpperCase()) > -1;
@@ -73,9 +72,9 @@ function ensureAuthorized(req, res, next) {
             }
         );
         accessLevel = route.accessLevel;
-        log('Found access level  ' + accessLevel + ' for route, checking user role.');
+        //log('Found access level  ' + accessLevel + ' for route, checking user role.');
     } catch (err) {
-        log('Error in getting access level for route, access level set to default public due to error: ' + err);
+        //log('Error in getting access level for route, access level set to default public due to error: ' + err);
         accessLevel = accessLevels.public;
     }
     if (!(accessLevel.bitMask & role.bitMask))

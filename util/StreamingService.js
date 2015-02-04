@@ -3,7 +3,7 @@
  */
 var HashMap = require('hashmap').HashMap,
     IncomingStreamHandler = require('../util/IncomingStreamHandler'),
-    log = require('debug')('lystream:StreamingService');
+    log = require('debug')('lystream:StreamingService ');
 
 var streamMap = new HashMap();
 function StreamingService() {
@@ -19,7 +19,7 @@ StreamingService.prototype.getIncomingStreamHandler = function (streamId) {
         streamMap.set(streamId, incomingStreamHandler);
         setTimeout(checkAlive, 3000, incomingStreamHandler, streamId);
     } else {
-        log('Video buffer already exists');
+        log('Stream handler already exists');
         incomingStreamHandler = streamMap.get(streamId);
     }
     return incomingStreamHandler;
@@ -30,7 +30,6 @@ StreamingService.prototype.isStreaming = function (streamId) {
 };
 
 function checkAlive(streamHandler, streamId) {
-    log('Checking status for stream with id ' + streamId);
     if (!streamHandler.isAlive()) {
         log('Buffer for stream ' + streamId + ' is inactive, deleting stream.')
         streamMap.remove(streamId);
