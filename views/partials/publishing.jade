@@ -1,0 +1,24 @@
+//
+   Created by ecyshor on 12.02.2015.
+
+.container
+    .row
+        .col-lg-6.col-lg-offset-3
+            h4 Publishing to a stream
+    .row
+        .col-lg-6.col-lg-offset-3
+            p In order to push data to a stream you must hava installed the FFMPEG utilitary.
+            p This can be downloaded from the following address:
+                a(href="https://www.ffmpeg.org/download.html") https://www.ffmpeg.org/download.html
+                .row
+                    .col-lg-10
+                        | After FFMPEG has been installed, please run the following command to start broadcasting,
+                        | with the URL code path replaced with your secret. After you have started broadcasting the
+                        | stream should be available in ~2 seconds.
+                        .row
+                            .col-lg-10
+                                code ffmpeg -f x11grab -s 800x600 -i :0.0 -flags +global_header -vcodec libvpx -r 15 -g 1  -deadline realtime -profile:v 0 -cpu-used 0 -vb 1000k -qmin 10 -qmax 42  -threads 3 -bufsize 9000k -slices 8 -map 0 -f stream_segment -segment_time 1 -segment_time_delta 0.02 -segment_format webm -dash 1 -segment_list_flags live {host}/streams/{secret}
+
+                .row
+                    .col-lg-10
+                        p Please note that after 10 seconds of inactivity from your part the stream shall be deleted.

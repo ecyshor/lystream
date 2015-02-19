@@ -30,6 +30,10 @@ angular.module('streamApp', [
             url:'/stream/:streamId',
             templateUrl:'/partials/stream',
             controller:'StreamingCtrl'
+        })
+        .state('public.publishing',{
+            url:'/publishing',
+            templateUrl:'/partials/publishing'
         });
 
     // Anonymous routes

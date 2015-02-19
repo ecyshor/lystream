@@ -45,6 +45,8 @@ html(ng-app='streamApp')
                             ul.dropdown-menu(role="menu")
                                 li
                                     a(ui-sref='user.private.streams', href='') Profile
+                                li
+                                    a(ui-sref='public.publishing') How to publish
                                 li.divider
                                 li
                                     a(href='',data-ng-click='logout()') Log out
@@ -61,10 +63,10 @@ html(ng-app='streamApp')
                 .row
                     .col-lg-12
                         p.muted-credit Reut Nicu
-        script(type="text/javascript",src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js")
+        script(type='application/javascript',src="/components/underscore/underscore.js")
         script(src='/components/jquery/dist/jquery.min.js')
         script(src='/components/bootstrap/dist/js/bootstrap.min.js')
-        script(src='/javascripts/dash/dash.all.js')
+        script(src='/javascripts/dash/dash.debug.js')
         script(src='/components/angular/angular.min.js')
         script(src='/components/angular-ui-router/release/angular-ui-router.min.js')
         script(src='/components/angular-cookies/angular-cookies.min.js')

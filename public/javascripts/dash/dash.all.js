@@ -2457,7 +2457,7 @@ MediaPlayer = function (a) {
             d = a
         },
         isReady: function () {
-            return n === k
+            return true
         },
         isBufferingCompleted: function () {
             return A

@@ -50,19 +50,20 @@ var IncomingStreamHandler = (function () {
                 headless: false, ignoreDecorators: false, stringify: {}
             });
         var date = new Date();
-        date.setSeconds(date.getSeconds() + 9);
+        date.setSeconds(date.getSeconds()+2);
         this.mpd.att({
             'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
             'xmlns': 'urn:mpeg:dash:schema:mpd:2011',
             'xsi:schemaLocation': 'urn:mpeg:dash:schema:mpd:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd',
             'type': 'dynamic',
             'availabilityStartTime': date.toJSON(),
-            'minBufferTime': 'PT0S',
+            'minBufferTime': 'PT1S',
             'profiles': 'urn:mpeg:dash:profile:isoff-live:2011',
             'publishTime': date.toJSON(),
             'suggestedPresentationDelay': 'PT0S',
-            'timeShiftBufferDepth': 'PT2S',
-            'maxSegmentDuration': 'PT2sS'
+            'timeShiftBufferDepth': 'PT4S',
+            'maxSegmentDuration': 'PT1S',
+            'minimumUpdatePeriod':'PT1H'
         });
         this.adaptationSet = this.mpd.ele('Period', {
             'id': '1',
@@ -73,9 +74,9 @@ var IncomingStreamHandler = (function () {
                 'mimeType': 'video/webm',
                 'segmentAlignment': 'true',
                 'startWithSAP': '1',
-                'maxWidth': '1920',
-                'maxHeight': '1080',
-                'maxFrameRate': '25'
+                'maxWidth': '1368',
+                'maxHeight': '768',
+                'maxFrameRate': '30'
             });
         this.adaptationSet.ele('ContentComponent ', {
             'id': '1',
@@ -85,13 +86,13 @@ var IncomingStreamHandler = (function () {
             'presentationTimeOffset': '0',
             'timescale': '1000',
             'media': '$RepresentationID$/$Number$/',
-            'duration': '2000'
+            'duration': '1000'
         });
         this.adaptationSet.ele('Representation', {
-            'id': 'downgraded',
+            'id': 'original',
             'width': '1360',
             'height': '768',
-            'frameRate': '10',
+            'frameRate': '30',
             'bandwidth': '1500000',
             'codecs': 'vp8',
             'scanType': 'progressive'
@@ -148,7 +149,7 @@ var IncomingStreamHandler = (function () {
 
         var outputOriginal = new stream.Writable();
         outputOriginal._write = (function (chunk, encoding, done) {
-            console.log('Received original data with length ' + chunk.length);
+           // console.log('Received original data with length ' + chunk.length);
             pipingStream.write(chunk);
             self.bufferRepresentations.original.buffer.append(chunk);
             self.bufferRepresentations.original.lastSegmentLength += chunk.length;
@@ -168,10 +169,10 @@ var IncomingStreamHandler = (function () {
             //.native()
             //.size('800x600')//'-force_key_frames expr:eq(n,0)'
             //.videoCodec('libvpx')
-            .outputOptions(['-vf scale=640x360','-force_key_frames 00:00:00.000','-g 1'])
-            //.outputOptions(['-flags +global_header','-g 1','-deadline realtime','-profile:v 0'
-            //,'-cpu-used 0','-qmin 10','-qmax 42','-threads 3', '-slices 4','-dash 1'])
-            //.videoBitrate(500)
+            //.outputOptions(['-vf scale=640x360','-force_key_frames 00:00:00.000','-g 1'])
+            /*.outputOptions(['-movflags','-flags +global_header','-g 1','-deadline realtime','-profile:v 0'
+            ,'-cpu-used 0','-qmin 10','-qmax 42','-threads 3', '-slices 4','-dash 1'])
+            .videoBitrate(500)*/
             .format('webm')
             .on('start', function (cmd) {
                log('Spawned Ffmpeg with command ' + cmd);
@@ -186,7 +187,7 @@ var IncomingStreamHandler = (function () {
                 console.log("stderr:\n" + stderr); //this will contain more detailed debugging info
             })
             .pipe().on('data',function(data){
-                console.log('FFMPEG outputed a fragment of ' + data.length);
+               // console.log('FFMPEG outputed a fragment of ' + data.length);
                 self.bufferRepresentations.downgraded.buffer.append(data);
                 self.bufferRepresentations.downgraded.lastSegmentLength += data.length;
                 downgradedSegmentLength += data.length;

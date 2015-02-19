@@ -53,8 +53,8 @@ var VideoBuffer = (function () {
                 endingIndex: lastSegment.endingIndex + segmentLength
             };
             log('Creating segment with length: ' + segmentLength + '\n and data :' + JSON.stringify(this.segmentList[this.lastSegment + 1]));
-            if (Object.keys(this.segmentList).length > 6) {
-                var firstSegmentId = this.lastSegment - 5;
+            if (Object.keys(this.segmentList).length > 30) {
+                var firstSegmentId = this.lastSegment - 29;
                 var firstSegment = this.segmentList[firstSegmentId];
                 this.segmentOffsetByte += firstSegment.dataLength;
                 log('Consuming ' + firstSegment.dataLength);

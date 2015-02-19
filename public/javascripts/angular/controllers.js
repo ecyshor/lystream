@@ -96,8 +96,7 @@ angular.module('streamApp').
             player.autoplay = true;
             player.debug = true;
             player.liveEdge = true;
-            //player.bufferExt = false;
-            console.log(player)
             player.attachView(document.querySelector("#videoplayer"));
             player.attachSource(url);
+            setTimeout(function(){player.play()},2000);
     });
